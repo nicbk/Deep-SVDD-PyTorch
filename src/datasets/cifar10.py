@@ -50,6 +50,27 @@ class CIFAR10_Dataset(TorchvisionDataset):
 class MyCIFAR10(CIFAR10):
     """Torchvision CIFAR10 class with patch of __getitem__ method to also return the index of a data sample."""
 
+    # Allows for compatibility with deprecated code elsewhere in repository
+    @property
+    def train_labels(self):
+        warnings.warn("train_labels has been renamed targets")
+        return self.targets
+
+    @property
+    def test_labels(self):
+        warnings.warn("test_labels has been renamed targets")
+        return self.targets
+
+    @property
+    def train_data(self):
+        warnings.warn("train_data has been renamed data")
+        return self.data
+
+    @property
+    def test_data(self):
+        warnings.warn("test_data has been renamed data")
+        return self.data
+
     def __init__(self, *args, **kwargs):
         super(MyCIFAR10, self).__init__(*args, **kwargs)
 
