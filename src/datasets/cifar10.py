@@ -71,8 +71,8 @@ class MyCIFAR10(CIFAR10):
         warnings.warn("test_data has been renamed data")
         return self.data
 
-    def __init__(self, *args, **kwargs):
-        super(MyCIFAR10, self).__init__(*args, **kwargs)
+    def __init__(self, root: str, train: bool = True, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False):
+        super().__init__(root, train, transform, target_transform, download)
 
     def __getitem__(self, index):
         """Override the original method of the CIFAR10 class.
