@@ -10,7 +10,7 @@ class CelebA_Net(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 128
+        self.rep_dim = 200
         self.pool = nn.MaxPool2d(2, 2)
 
         self.conv1 = nn.Conv2d(3, 32, 28, bias=False, padding=2)
@@ -38,7 +38,7 @@ class CelebA_Net_Autoencoder(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 128
+        self.rep_dim = 200
         self.pool = nn.MaxPool2d(2, 2)
 
         # Encoder (must match the Deep SVDD network above)
