@@ -1,5 +1,6 @@
 from .mnist import MNIST_Dataset
 from .cifar10 import CIFAR10_Dataset
+from .celeba import CelebA_Dataset
 
 
 def load_dataset(dataset_name, data_path, normal_class):
@@ -15,5 +16,8 @@ def load_dataset(dataset_name, data_path, normal_class):
 
     if dataset_name == 'cifar10':
         dataset = CIFAR10_Dataset(root=data_path, normal_class=normal_class)
+
+    if dataset_name == 'celeba':
+        dataset = CelebA_Dataset(root=data_path, normal_class=normal_class)
 
     return dataset

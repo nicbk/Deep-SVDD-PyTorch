@@ -1,22 +1,22 @@
 from torch.utils.data import Subset
 from PIL import Image
-from torchvision.datasets import CIFAR10
+from torchvision.datasets import CelebA
 from base.torchvision_dataset import TorchvisionDataset
 from .preprocessing import get_target_label_idx, global_contrast_normalization
-from typing import Any, Callable, Optional, Tuple
+from typing import Any, Callable, Optional, Tuple, Union
 
 import warnings
 import torchvision.transforms as transforms
 
 
-class CIFAR10_Dataset(TorchvisionDataset):
+class CelebA_Dataset(TorchvisionDataset):
 
     def __init__(self, root: str, normal_class=5):
         super().__init__(root)
 
         self.n_classes = 2  # 0: normal, 1: outlier
         self.normal_classes = tuple([normal_class])
-        self.outlier_classes = list(range(0, 10))
+        self.outlier_classes = list(range(0, 40))
         self.outlier_classes.remove(normal_class)
 
         # Pre-computed min and max values (after applying GCN) from train data per class
@@ -49,8 +49,8 @@ class CIFAR10_Dataset(TorchvisionDataset):
                                   transform=transform, target_transform=target_transform)
 
 
-class MyCIFAR10(CIFAR10):
-    """Torchvision CIFAR10 class with patch of __getitem__ method to also return the index of a data sample."""
+class MyCelebA(CelebA):
+    """Torchvision CelebA class with patch of __getitem__ method to also return the index of a data sample."""
 
     # Allows for compatibility with deprecated code elsewhere in repository
     @property
@@ -73,7 +73,7 @@ class MyCIFAR10(CIFAR10):
         warnings.warn("test_data has been renamed data")
         return self.data
 
-    def __init__(self, root: str, train: bool = True, transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False):
+    def __init__(self, root: str, split: str = 'train', target_type: Union[List[str], str] = 'attr', transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False):
         super().__init__(root, train, transform, target_transform, download)
 
     def __getitem__(self, index):
