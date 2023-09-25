@@ -10,16 +10,16 @@ class CelebA_Net(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 128
+        self.rep_dim = 192
         self.pool = nn.MaxPool2d(2, 2)
 
         self.conv1 = nn.Conv2d(3, 32, 27, bias=False, padding=2)
         self.bn2d1 = nn.BatchNorm2d(32, eps=1e-04, affine=False)
         self.conv2 = nn.Conv2d(32, 64, 27, bias=False, padding=2)
         self.bn2d2 = nn.BatchNorm2d(64, eps=1e-04, affine=False)
-        self.conv3 = nn.Conv2d(64, 128, 27, bias=False, padding=2)
-        self.bn2d3 = nn.BatchNorm2d(128, eps=1e-04, affine=False)
-        self.fc1 = nn.Linear(128 * 4 * 4, self.rep_dim, bias=False)
+        self.conv3 = nn.Conv2d(64, 192, 27, bias=False, padding=2)
+        self.bn2d3 = nn.BatchNorm2d(192, eps=1e-04, affine=False)
+        self.fc1 = nn.Linear(192 * 4 * 4, self.rep_dim, bias=False)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -38,7 +38,7 @@ class CelebA_Net_Autoencoder(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 128
+        self.rep_dim = 192
         self.pool = nn.MaxPool2d(2, 2)
 
         # Encoder (must match the Deep SVDD network above)
@@ -48,17 +48,17 @@ class CelebA_Net_Autoencoder(BaseNet):
         self.conv2 = nn.Conv2d(32, 64, 27, bias=False, padding=2)
         nn.init.xavier_uniform_(self.conv2.weight, gain=nn.init.calculate_gain('leaky_relu'))
         self.bn2d2 = nn.BatchNorm2d(64, eps=1e-04, affine=False)
-        self.conv3 = nn.Conv2d(64, 128, 27, bias=False, padding=2)
+        self.conv3 = nn.Conv2d(64, 192, 27, bias=False, padding=2)
         nn.init.xavier_uniform_(self.conv3.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d3 = nn.BatchNorm2d(128, eps=1e-04, affine=False)
-        self.fc1 = nn.Linear(128 * 4 * 4, self.rep_dim, bias=False)
+        self.bn2d3 = nn.BatchNorm2d(192, eps=1e-04, affine=False)
+        self.fc1 = nn.Linear(192 * 4 * 4, self.rep_dim, bias=False)
         self.bn1d = nn.BatchNorm1d(self.rep_dim, eps=1e-04, affine=False)
 
         # Decoder
-        self.deconv1 = nn.ConvTranspose2d(int(self.rep_dim / (4 * 4)), 128, 27, bias=False, padding=2)
+        self.deconv1 = nn.ConvTranspose2d(int(self.rep_dim / (4 * 4)), 192, 27, bias=False, padding=2)
         nn.init.xavier_uniform_(self.deconv1.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d4 = nn.BatchNorm2d(128, eps=1e-04, affine=False)
-        self.deconv2 = nn.ConvTranspose2d(128, 64, 27, bias=False, padding=2)
+        self.bn2d4 = nn.BatchNorm2d(192, eps=1e-04, affine=False)
+        self.deconv2 = nn.ConvTranspose2d(192, 64, 27, bias=False, padding=2)
         nn.init.xavier_uniform_(self.deconv2.weight, gain=nn.init.calculate_gain('leaky_relu'))
         self.bn2d5 = nn.BatchNorm2d(64, eps=1e-04, affine=False)
         self.deconv3 = nn.ConvTranspose2d(64, 32, 27, bias=False, padding=2)
