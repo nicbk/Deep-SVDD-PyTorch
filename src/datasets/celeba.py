@@ -20,6 +20,7 @@ class CelebA_Dataset(TorchvisionDataset):
         self.outlier_classes = list(range(0, 40))
         self.outlier_classes.remove(normal_class)
 
+        # Derived on subset of 2000 training images per attribute class
         min_max = [(-5.549275, 9.29441), (-9.556149, 8.864991), (-5.953659, 7.4443283), (-6.4589705, 8.864991), (-6.01108, 8.693999), (-9.556149, 9.282144), (-6.251924, 8.97718), (-6.4589705, 9.498133), (-4.918437, 9.498133), (-8.171633, 6.0304255), (-5.811125, 11.721458), (-4.5102797, 9.158465), (-6.2917924, 8.071238), (-6.2917924, 10.04199), (-6.6773515, 8.340185), (-6.2917924, 9.498133), (-6.806502, 12.566853), (-7.5726933, 7.733251), (-8.171633, 6.6883006), (-5.785223, 6.6513276), (-6.2917924, 9.498133), (-6.2917924, 7.0371265), (-5.538945, 12.299471), (-6.7143073, 8.987023), (-7.5726933, 9.812891), (-8.171633, 6.9903736), (-9.556149, 6.6022143), (-7.5726933, 7.744242), (-7.0190334, 11.603071), (-7.0190334, 7.1444798), (-6.1495414, 9.764772), (-5.785223, 9.158465), (-9.556149, 6.770698), (-5.785223, 9.282144), (-7.7556286, 7.432579), (-5.3981357, 11.361711), (-7.5726933, 7.7363286), (-7.5726933, 7.8059897), (-6.2917924, 12.299471), (-7.5726933, 9.812891)]
 
         # CelebA preprocessing: GCN (with L1 norm) and min-max feature scaling to [0,1]
@@ -28,7 +29,8 @@ class CelebA_Dataset(TorchvisionDataset):
                                         transforms.Normalize([min_max[normal_class][0]] * 3,
                                                              [min_max[normal_class][1] - min_max[normal_class][0]] * 3)])
 
-        target_transform = transforms.Lambda(lambda x: int(x in self.outlier_classes))
+        #target_transform = transforms.Lambda(lambda x: int(x in self.outlier_classes))
+        target_transform = transforms.Lambda(lambda x: int(x[normal_class] == 0))
 
         train_set = MyCelebA(root=self.root, split='train', target_type='attr', download=False, transform=transform, target_transform=target_transform)
         # Subset train set to normal class
