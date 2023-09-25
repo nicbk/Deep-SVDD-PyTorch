@@ -20,7 +20,7 @@ class CelebA_Dataset(TorchvisionDataset):
         self.outlier_classes = list(range(0, 40))
         self.outlier_classes.remove(normal_class)
 
-        train_set_full = MyCelebA(root=root, split='train', target_type='attr', download=True, transform=None, target_transform=None)
+        train_set_full = MyCelebA(root=root, split='train', target_type='attr', download=False, transform=None, target_transform=None)
 
         MIN = []
         MAX = []
@@ -46,12 +46,12 @@ class CelebA_Dataset(TorchvisionDataset):
 
         target_transform = transforms.Lambda(lambda x: int(x in self.outlier_classes))
 
-        train_set = MyCelebA(root=self.root, split='train', target_type='attr', download=True, transform=transform, target_transform=target_transform)
+        train_set = MyCelebA(root=self.root, split='train', target_type='attr', download=False, transform=transform, target_transform=target_transform)
         # Subset train set to normal class
         train_idx_normal = get_target_label_idx(train_set.targets, self.normal_classes)
         self.train_set = Subset(train_set, train_idx_normal)
 
-        self.test_set = MyCelebA(root=self.root, split='test', target_type='attr', download=True, transform=transform, target_transform=target_transform)
+        self.test_set = MyCelebA(root=self.root, split='test', target_type='attr', download=False, transform=transform, target_transform=target_transform)
 
 
 class MyCelebA(CelebA):
