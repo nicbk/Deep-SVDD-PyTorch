@@ -7,6 +7,7 @@ def load_dataset(dataset_name, data_path, normal_class):
     """Loads the dataset."""
 
     implemented_datasets = ('mnist', 'cifar10', 'celeba')
+    assert dataset_name == 'celeba'
 
     dataset = None
 
