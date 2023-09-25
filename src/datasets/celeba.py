@@ -33,7 +33,7 @@ class CelebA_Dataset(TorchvisionDataset):
             _min_ = []
             _max_ = []
             for idx in train_set.indices:
-                image = Image.open(os.path.join(self.root, self.base_folder, "img_align_celeba", self.filename[idx]))
+                image = Image.open(os.path.join(train_set_full.root, train_set_full.base_folder, "img_align_celeba", train_set_full.filename[idx]))
                 gcm = global_contrast_normalization(pil_to_tensor(image), 'l1')
                 _min_.append(gcm.min())
                 _max_.append(gcm.max())
