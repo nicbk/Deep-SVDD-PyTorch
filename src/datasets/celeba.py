@@ -22,6 +22,8 @@ class CelebA_Dataset(TorchvisionDataset):
 
         train_set_full = MyCelebA(root=root, split='train', target_type='attr', download=False, transform=None, target_transform=None)
 
+        pil_to_tensor = transforms.Compose([transforms.ToTensor()])
+
         MIN = []
         MAX = []
         for normal_classes in range(40):
@@ -31,7 +33,8 @@ class CelebA_Dataset(TorchvisionDataset):
             _min_ = []
             _max_ = []
             for idx in train_set.indices:
-                gcm = global_contrast_normalization(train_set.dataset.data[idx].float(), 'l1')
+                image = Image.open(os.path.join(self.root, self.base_folder, "img_align_celeba", self.filename[idx]))
+                gcm = global_contrast_normalization(pil_to_tensor(image), 'l1')
                 _min_.append(gcm.min())
                 _max_.append(gcm.max())
             MIN.append(np.min(_min_))
