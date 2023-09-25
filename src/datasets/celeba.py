@@ -36,7 +36,7 @@ class CelebA_Dataset(TorchvisionDataset):
                 _max_.append(gcm.max())
             MIN.append(np.min(_min_))
             MAX.append(np.max(_max_))
-        min_max = list(zip(MIN, MAX)))
+        min_max = list(zip(MIN, MAX))
 
         # CelebA preprocessing: GCN (with L1 norm) and min-max feature scaling to [0,1]
         transform = transforms.Compose([transforms.ToTensor(),
