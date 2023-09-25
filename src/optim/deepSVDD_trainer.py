@@ -160,13 +160,17 @@ class DeepSVDDTrainer(BaseTrainer):
 
         net.eval()
         with torch.no_grad():
+            counter = 0
             for data in train_loader:
+                counter += 1
                 # get the inputs of the batch
                 inputs, _, _ = data
                 inputs = inputs.to(self.device)
                 outputs = net(inputs)
                 n_samples += outputs.shape[0]
                 c += torch.sum(outputs, dim=0)
+                if counter == 5:
+                    break
 
         c /= n_samples
 
