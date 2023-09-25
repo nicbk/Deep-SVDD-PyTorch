@@ -19,7 +19,7 @@ class CelebA_Net(BaseNet):
         self.bn2d2 = nn.BatchNorm2d(64, eps=1e-04, affine=False)
         self.conv3 = nn.Conv2d(64, 128, 28, bias=False, padding=2)
         self.bn2d3 = nn.BatchNorm2d(128, eps=1e-04, affine=False)
-        self.fc1 = nn.Linear(128 * 4 * 4, self.rep_dim, bias=False)
+        self.fc1 = nn.Linear(1792, self.rep_dim, bias=False)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -51,7 +51,7 @@ class CelebA_Net_Autoencoder(BaseNet):
         self.conv3 = nn.Conv2d(64, 128, 28, bias=False, padding=2)
         nn.init.xavier_uniform_(self.conv3.weight, gain=nn.init.calculate_gain('leaky_relu'))
         self.bn2d3 = nn.BatchNorm2d(128, eps=1e-04, affine=False)
-        self.fc1 = nn.Linear(128 * 4 * 4, self.rep_dim, bias=False)
+        self.fc1 = nn.Linear(1792, self.rep_dim, bias=False)
         self.bn1d = nn.BatchNorm1d(self.rep_dim, eps=1e-04, affine=False)
 
         # Decoder
