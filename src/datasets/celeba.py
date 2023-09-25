@@ -3,7 +3,7 @@ from PIL import Image
 from torchvision.datasets import CelebA
 from base.torchvision_dataset import TorchvisionDataset
 from .preprocessing import get_target_label_idx, global_contrast_normalization
-from typing import Any, Callable, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 import os
 import warnings
