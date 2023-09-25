@@ -6,7 +6,9 @@ from .celeba import CelebA_Dataset
 def load_dataset(dataset_name, data_path, normal_class):
     """Loads the dataset."""
 
-    implemented_datasets = ('celeba', 'mnist', 'cifar10')
+    implemented_datasets = ('mnist', 'cifar10', 'celeba')
+    print(dataset_name)
+    print(implemented_datasets)
     assert dataset_name in implemented_datasets
 
     dataset = None
