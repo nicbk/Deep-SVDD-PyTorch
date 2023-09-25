@@ -25,7 +25,7 @@ class CelebA_Dataset(TorchvisionDataset):
         MIN = []
         MAX = []
         for normal_classes in range(40):
-            train_idx_normal = get_target_label_idx(train_set_full.train_labels.clone().data.cpu().numpy(), normal_classes)
+            train_idx_normal = get_target_label_idx(train_set_full.attr.clone().data.cpu().numpy(), normal_classes)
             train_set = Subset(train_set_full, train_idx_normal)
 
             _min_ = []
