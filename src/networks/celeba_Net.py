@@ -55,7 +55,7 @@ class CelebA_Net_Autoencoder(BaseNet):
         self.bn1d = nn.BatchNorm1d(self.rep_dim, eps=1e-04, affine=False)
 
         # Decoder
-        self.deconv1 = nn.ConvTranspose2d(int(4752 / (4 * 4)), 128, 5, bias=False, padding=2)
+        self.deconv1 = nn.ConvTranspose2d(int(self.rep_dim / (4 * 4)), 128, 5, bias=False, padding=2)
         nn.init.xavier_uniform_(self.deconv1.weight, gain=nn.init.calculate_gain('leaky_relu'))
         self.bn2d4 = nn.BatchNorm2d(128, eps=1e-04, affine=False)
         self.deconv2 = nn.ConvTranspose2d(128, 64, 5, bias=False, padding=2)
