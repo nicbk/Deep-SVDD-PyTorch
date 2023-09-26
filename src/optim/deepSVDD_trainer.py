@@ -160,6 +160,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
         net.eval()
         with torch.no_grad():
+            print(len(train_loader))
             for data in train_loader:
                 # get the inputs of the batch
                 inputs, _, _ = data
