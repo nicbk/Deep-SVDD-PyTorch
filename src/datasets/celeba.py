@@ -34,7 +34,7 @@ class CelebA_Dataset(TorchvisionDataset):
 
         train_set = MyCelebA(root=self.root, split='train', target_type='attr', download=False, transform=transform, target_transform=target_transform)
         # Subset train set to normal class
-        train_idx_normal = get_target_label_idx(train_set.attr[:,self.normal_classes], 1)
+        train_idx_normal = get_target_label_idx(train_set.attr[:,normal_class], [1])
         self.train_set = Subset(train_set, train_idx_normal)
 
         self.test_set = MyCelebA(root=self.root, split='test', target_type='attr', download=False, transform=transform, target_transform=target_transform)
