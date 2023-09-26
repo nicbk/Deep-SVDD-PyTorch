@@ -76,7 +76,7 @@ class CelebA_Net_Autoencoder(BaseNet):
         x = self.pool(F.leaky_relu(self.bn2d3(x)))
         x = x.view(x.size(0), -1)
         x = self.bn1d(self.fc1(x))
-        x = x.view(x.size(0), int(4752 / (4 * 4)), 4, 4)
+        x = x.view(x.size(0), int(self.rep_dim / (4 * 4)), 4, 4)
         x = F.leaky_relu(x)
         x = self.deconv1(x)
         x = F.interpolate(F.leaky_relu(self.bn2d4(x)), scale_factor=2)
