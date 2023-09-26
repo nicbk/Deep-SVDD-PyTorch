@@ -71,7 +71,10 @@ class DeepSVDDTrainer(BaseTrainer):
             loss_epoch = 0.0
             n_batches = 0
             epoch_start_time = time.time()
+            counter = 0
             for data in train_loader:
+                counter += 1
+                print('Train ' + str(counter) + ' / ' + str(len(train_loader)))
                 inputs, _, _ = data
                 inputs = inputs.to(self.device)
 
@@ -160,11 +163,10 @@ class DeepSVDDTrainer(BaseTrainer):
 
         net.eval()
         with torch.no_grad():
-            print(len(train_loader))
             counter = 0
             for data in train_loader:
                 counter += 1
-                print(counter)
+                print('Center Init ' + str(counter) + ' / ' + str(len(train_loader)))
                 # get the inputs of the batch
                 inputs, _, _ = data
                 inputs = inputs.to(self.device)
