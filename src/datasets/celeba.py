@@ -20,8 +20,8 @@ class CelebA_Dataset(TorchvisionDataset):
         self.outlier_classes = list(range(0, 40))
         self.outlier_classes.remove(normal_class)
 
-        # Derived on subset of 2000 training images per attribute class
-        min_max = [(-5.549275, 9.29441), (-9.556149, 8.864991), (-5.953659, 7.4443283), (-6.4589705, 8.864991), (-6.01108, 8.693999), (-9.556149, 9.282144), (-6.251924, 8.97718), (-6.4589705, 9.498133), (-4.918437, 9.498133), (-8.171633, 6.0304255), (-5.811125, 11.721458), (-4.5102797, 9.158465), (-6.2917924, 8.071238), (-6.2917924, 10.04199), (-6.6773515, 8.340185), (-6.2917924, 9.498133), (-6.806502, 12.566853), (-7.5726933, 7.733251), (-8.171633, 6.6883006), (-5.785223, 6.6513276), (-6.2917924, 9.498133), (-6.2917924, 7.0371265), (-5.538945, 12.299471), (-6.7143073, 8.987023), (-7.5726933, 9.812891), (-8.171633, 6.9903736), (-9.556149, 6.6022143), (-7.5726933, 7.744242), (-7.0190334, 11.603071), (-7.0190334, 7.1444798), (-6.1495414, 9.764772), (-5.785223, 9.158465), (-9.556149, 6.770698), (-5.785223, 9.282144), (-7.7556286, 7.432579), (-5.3981357, 11.361711), (-7.5726933, 7.7363286), (-7.5726933, 7.8059897), (-6.2917924, 12.299471), (-7.5726933, 9.812891)]
+        # Only class 31 has been computed
+        min_max = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (-7.7556286, 14.142446), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
 
         # CelebA preprocessing: GCN (with L1 norm) and min-max feature scaling to [0,1]
         transform = transforms.Compose([transforms.ToTensor(),
@@ -55,27 +55,6 @@ class MyCelebA(CelebA):
         # ("0B7EVK8r0v71pTzJIdlJWdHczRlU", "063ee6ddb681f96bc9ca28c6febb9d1a", "list_landmarks_celeba.txt"),
         ("0B7EVK8r0v71pY0NSMzRuSXJEVkk", "d32c9cbf5e040fd4025c592c306e6668", "list_eval_partition.txt"),
     ]
-
-    # Allows for compatibility with deprecated code elsewhere in repository
-    @property
-    def train_labels(self):
-        warnings.warn("train_labels has been renamed targets")
-        return self.targets
-
-    @property
-    def test_labels(self):
-        warnings.warn("test_labels has been renamed targets")
-        return self.targets
-
-    @property
-    def train_data(self):
-        warnings.warn("train_data has been renamed data")
-        return self.data
-
-    @property
-    def test_data(self):
-        warnings.warn("test_data has been renamed data")
-        return self.data
 
     def __init__(self, root: str, split: str = 'train', target_type: Union[List[str], str] = 'attr', transform: Optional[Callable] = None, target_transform: Optional[Callable] = None, download: bool = False):
         super().__init__(root, split, target_type, transform, target_transform, download)
