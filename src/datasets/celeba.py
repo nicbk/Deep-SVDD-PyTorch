@@ -20,8 +20,8 @@ class CelebA_Dataset(TorchvisionDataset):
         self.outlier_classes = list(range(0, 40))
         self.outlier_classes.remove(normal_class)
 
-        # Only class 31 has been computed
-        min_max = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (-7.7556286, 14.142446), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
+        # Only a few classes have been computed
+        min_max = [(0, 0), (0, 0), (-9.556149, 10.84259), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (-7.7556286, 14.142446), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
 
         # CelebA preprocessing: GCN (with L1 norm) and min-max feature scaling to [0,1]
         transform = transforms.Compose([transforms.ToTensor(),
