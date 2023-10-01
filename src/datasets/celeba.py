@@ -86,13 +86,13 @@ class MyCelebA(CelebA):
         if self.transform is not None:
             X = self.transform(X)
 
-        if self.apply_target_transform:
-            if target:
-                target = tuple(target) if len(target) > 1 else target[0]
+        if target:
+            target = tuple(target) if len(target) > 1 else target[0]
 
+            if self.apply_target_transform:
                 if self.target_transform is not None:
                     target = self.target_transform(target)
-            else:
-                target = None
+        else:
+            target = None
 
         return X, target, index  # only line changed
