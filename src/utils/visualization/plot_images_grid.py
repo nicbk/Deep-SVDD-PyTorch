@@ -7,7 +7,7 @@ import numpy as np
 from torchvision.utils import make_grid
 
 
-def plot_images_grid(x: torch.tensor, export_img, title: str = '', nrow=8, padding=2, normalize=False, pad_value=0):
+def plot_images_grid(x: torch.tensor, export_img, title: str = '', nrow=8, padding=2, normalize=False, pad_value=0, dpi=300):
     """Plot 4D Tensor of images of shape (B x C x H x W) as a grid."""
 
     grid = make_grid(x, nrow=nrow, padding=padding, normalize=normalize, pad_value=pad_value)
@@ -22,5 +22,5 @@ def plot_images_grid(x: torch.tensor, export_img, title: str = '', nrow=8, paddi
     if not (title == ''):
         plt.title(title)
 
-    plt.savefig(export_img, bbox_inches='tight', pad_inches=0.1)
+    plt.savefig(export_img, bbox_inches='tight', pad_inches=0.1, dpi=dpi)
     plt.clf()
