@@ -42,6 +42,7 @@ class CelebA_Dataset(TorchvisionDataset):
 
 class MyCelebA(CelebA):
     """Torchvision CelebA class with patch of __getitem__ method to also return the index of a data sample."""
+    apply_target_transform = True
 
     file_list = [
         # File ID                                      MD5 Hash                            Filename
@@ -85,12 +86,13 @@ class MyCelebA(CelebA):
         if self.transform is not None:
             X = self.transform(X)
 
-        if target:
-            target = tuple(target) if len(target) > 1 else target[0]
+        if self.apply_target_transform:
+            if target:
+                target = tuple(target) if len(target) > 1 else target[0]
 
-            if self.target_transform is not None:
-                target = self.target_transform(target)
-        else:
-            target = None
+                if self.target_transform is not None:
+                    target = self.target_transform(target)
+            else:
+                target = None
 
         return X, target, index  # only line changed
