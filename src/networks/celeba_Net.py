@@ -70,6 +70,7 @@ class CelebA_Net_Autoencoder(BaseNet):
         nn.init.xavier_uniform_(self.conv5.weight, gain=nn.init.calculate_gain('leaky_relu'))
         self.bn2d5 = nn.BatchNorm2d(self.mult*16, eps=1e-04, affine=False)
         self.fc1 = nn.Linear(self.mult*16 * 6 * 5, self.rep_dim, bias=False)
+        self.bn1d = nn.BatchNorm1d(self.rep_dim, eps=1e-04, affine=False)
 
         # Decoder
         self.fc2 = nn.Linear(self.rep_dim, self.mult*16 * 6 * 5, bias=False)
@@ -101,7 +102,7 @@ class CelebA_Net_Autoencoder(BaseNet):
         x = self.conv5(x)
         x = self.pool(F.leaky_relu(self.bn2d5(x)))
         x = x.view(x.size(0), -1)
-        x = self.fc1(x)
+        x = self.bn1d(self.fc1(x))
 
         x = self.fc2(x)
         x = F.leaky_relu(x)
