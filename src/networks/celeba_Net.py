@@ -12,8 +12,8 @@ class CelebA_Net(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 1024
-        self.mult = 32
+        self.rep_dim = 64
+        self.mult = 48
         self.pool = nn.MaxPool2d(2, 2)
 
         self.conv1 = nn.Conv2d(3, self.mult, 5, bias=False, padding=2)
@@ -49,8 +49,8 @@ class CelebA_Net_Autoencoder(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 1024
-        self.mult = 32
+        self.rep_dim = 64
+        self.mult = 48
         self.pool = nn.MaxPool2d(2, 2)
 
         # Encoder (must match the Deep SVDD network above)
@@ -70,7 +70,6 @@ class CelebA_Net_Autoencoder(BaseNet):
         nn.init.xavier_uniform_(self.conv5.weight, gain=nn.init.calculate_gain('leaky_relu'))
         self.bn2d5 = nn.BatchNorm2d(self.mult*16, eps=1e-04, affine=False)
         self.fc1 = nn.Linear(self.mult*16 * 6 * 5, self.rep_dim, bias=False)
-        self.bn1d = nn.BatchNorm1d(self.rep_dim, eps=1e-04, affine=False)
 
         # Decoder
         self.fc2 = nn.Linear(self.rep_dim, self.mult*16 * 6 * 5, bias=False)
@@ -102,7 +101,7 @@ class CelebA_Net_Autoencoder(BaseNet):
         x = self.conv5(x)
         x = self.pool(F.leaky_relu(self.bn2d5(x)))
         x = x.view(x.size(0), -1)
-        x = self.bn1d(self.fc1(x))
+        x = self.fc1(x)
 
         x = self.fc2(x)
         x = F.leaky_relu(x)
