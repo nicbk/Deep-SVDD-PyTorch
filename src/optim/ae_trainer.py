@@ -107,7 +107,7 @@ class AETrainer(BaseTrainer):
 
                 kld_weight = self.batch_size/len(test_loader)
                 
-                scores = torch.sum((output_img - inputs) ** 2, dim=tuple(range(1, outputs.dim())))
+                scores = torch.sum((output_img - inputs) ** 2, dim=tuple(range(1, output_img.dim())))
                 recons_loss = F.mse_loss(output_img, inputs)
 
                 kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)
