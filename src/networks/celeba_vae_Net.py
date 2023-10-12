@@ -17,6 +17,7 @@ class Interpolate(nn.Module):
 
 # Network copied from:
 # https://github.com/AntixK/PyTorch-VAE/blob/master/models/vanilla_vae.py
+# https://arxiv.org/pdf/1902.04601.pdf
 class CelebA_VAE_Net(BaseNet):
 
     def __init__(self):
