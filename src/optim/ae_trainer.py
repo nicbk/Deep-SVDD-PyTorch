@@ -59,7 +59,7 @@ class AETrainer(BaseTrainer):
 
                 # Update network parameters via backpropagation: forward + backward + optimize
                 output_img, mu, log_var = ae_net(inputs)
-                kld_weight = 0.9 * self.batch_size/len(train_loader)
+                kld_weight = 0.9 * self.batch_size/len(dataset.train_set)
                 
                 recons_loss = F.mse_loss(output_img, inputs)
 
@@ -105,14 +105,7 @@ class AETrainer(BaseTrainer):
                 inputs = inputs.to(self.device)
                 output_img, mu, log_var = ae_net(inputs)
 
-                kld_weight = 0.9 * self.batch_size/len(test_loader)
-                
                 scores = torch.sum((output_img - inputs) ** 2, dim=tuple(range(1, output_img.dim())))
-                recons_loss = F.mse_loss(output_img, inputs)
-
-                kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)
-
-                loss = recons_loss + kld_weight * kld_loss
 
                 # Save triple of (idx, label, score) in a list
                 idx_label_score += list(zip(idx.cpu().data.numpy().tolist(),
