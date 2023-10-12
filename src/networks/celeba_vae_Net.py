@@ -20,7 +20,7 @@ class Interpolate(nn.Module):
 class CelebA_VAE_Net(BaseNet):
 
     def __init__(self):
-        super(CelebA_VAE_Net, self).__init__()
+        super().__init__()
 
         self.rep_dim = 64
 
@@ -58,7 +58,7 @@ class CelebA_VAE_Net(BaseNet):
 class CelebA_VAE_Net_Autoencoder(BaseNet):
 
     def __init__(self):
-        super(CelebA_VAE_Net_Autoencoder, self).__init__()
+        super().__init__()
 
         self.rep_dim = 64
 
