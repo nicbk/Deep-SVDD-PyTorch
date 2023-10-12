@@ -107,6 +107,7 @@ class AETrainer(BaseTrainer):
 
                 kld_weight = self.batch_size/len(test_loader)
                 
+                scores = torch.sum((output_img - inputs) ** 2, dim=tuple(range(1, outputs.dim())))
                 recons_loss = F.mse_loss(output_img, inputs)
 
                 kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)
@@ -116,7 +117,7 @@ class AETrainer(BaseTrainer):
                 # Save triple of (idx, label, score) in a list
                 idx_label_score += list(zip(idx.cpu().data.numpy().tolist(),
                                             labels.cpu().data.numpy().tolist(),
-                                            recons_loss.cpu().data.numpy().tolist()))
+                                            scores.cpu().data.numpy().tolist()))
 
                 loss_epoch += loss.item()
                 n_batches += 1
