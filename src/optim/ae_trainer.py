@@ -116,7 +116,7 @@ class AETrainer(BaseTrainer):
                 # Save triple of (idx, label, score) in a list
                 idx_label_score += list(zip(idx.cpu().data.numpy().tolist(),
                                             labels.cpu().data.numpy().tolist(),
-                                            scores.cpu().data.numpy().tolist()))
+                                            recons_loss.cpu().data.numpy().tolist()))
 
                 loss_epoch += loss.item()
                 n_batches += 1
