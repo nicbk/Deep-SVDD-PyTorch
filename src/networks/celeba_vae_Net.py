@@ -22,10 +22,10 @@ class CelebA_VAE_Net(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 64
+        self.rep_dim = 50
 
         modules = []
-        hidden_dims = [32, 64, 128, 256, 512]
+        hidden_dims = [48, 80, 140, 300, 768]
 
         in_channels = 3
         for h_dim in hidden_dims:
@@ -60,10 +60,10 @@ class CelebA_VAE_Net_Autoencoder(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 64
+        self.rep_dim = 50
 
         modules = []
-        hidden_dims = [32, 64, 128, 256, 512]
+        hidden_dims = [40, 80, 140, 300, 768]
 
         in_channels = 3
         for h_dim in hidden_dims:
@@ -129,7 +129,7 @@ class CelebA_VAE_Net_Autoencoder(BaseNet):
         x = eps * std + mu
 
         x = self.decoder_input(x)
-        x = x.view(-1, 512, 7, 6)
+        x = x.view(-1, 768, 7, 6)
         x = self.decoder(x)
         x = self.final_layer(x)
 
