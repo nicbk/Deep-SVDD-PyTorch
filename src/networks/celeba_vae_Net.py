@@ -17,7 +17,7 @@ class Interpolate(nn.Module):
 
 # Network copied from:
 # https://github.com/AntixK/PyTorch-VAE/blob/master/models/vanilla_vae.py
-class CelebA_Net(BaseNet):
+class CelebA_VAE_Net(BaseNet):
 
     def __init__(self):
         super().__init__()
@@ -55,7 +55,7 @@ class CelebA_Net(BaseNet):
         return eps * std + mu
 
 
-class CelebA_Net_Autoencoder(BaseNet):
+class CelebA_VAE_Net_Autoencoder(BaseNet):
 
     def __init__(self):
         self.rep_dim = 64
