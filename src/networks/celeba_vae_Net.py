@@ -83,7 +83,7 @@ class CelebA_VAE_Net_Autoencoder(BaseNet):
 
         modules = []
         self.decoder_input = nn.Linear(self.rep_dim, hidden_dims[-1]*6*5)
-        hidden_dim.reverse()
+        hidden_dims.reverse()
 
         for i in range(len(hidden_dims) - 1):
             modules.append(
