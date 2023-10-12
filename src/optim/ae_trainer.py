@@ -2,6 +2,7 @@ from base.base_trainer import BaseTrainer
 from base.base_dataset import BaseADDataset
 from base.base_net import BaseNet
 from sklearn.metrics import roc_auc_score
+from torch.nn import functional as F
 
 import logging
 import time
@@ -57,9 +58,14 @@ class AETrainer(BaseTrainer):
                 optimizer.zero_grad()
 
                 # Update network parameters via backpropagation: forward + backward + optimize
-                outputs = ae_net(inputs)
-                scores = torch.sum((outputs - inputs) ** 2, dim=tuple(range(1, outputs.dim())))
-                loss = torch.mean(scores)
+                output_img, mu, log_var = ae_net(inputs)
+                kld_weight = scheduler.get_lr()[0]
+                
+                recons_loss = F.mse_loss(output_img, inputs)
+
+                kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)
+
+                loss = recons_loss + kld_weight * kld_loss
                 loss.backward()
                 optimizer.step()
 
@@ -97,9 +103,15 @@ class AETrainer(BaseTrainer):
             for data in test_loader:
                 inputs, labels, idx = data
                 inputs = inputs.to(self.device)
-                outputs = ae_net(inputs)
-                scores = torch.sum((outputs - inputs) ** 2, dim=tuple(range(1, outputs.dim())))
-                loss = torch.mean(scores)
+                output_img, mu, log_var = ae_net(inputs)
+
+                kld_weight = scheduler.get_lr()[0]
+                
+                recons_loss = F.mse_loss(output_img, inputs)
+
+                kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)
+
+                loss = recons_loss + kld_weight * kld_loss
 
                 # Save triple of (idx, label, score) in a list
                 idx_label_score += list(zip(idx.cpu().data.numpy().tolist(),
