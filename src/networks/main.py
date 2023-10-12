@@ -52,6 +52,6 @@ def build_autoencoder(net_name):
         ae_net = CelebA_Net_Autoencoder()
 
     if net_name == 'celeba_vae_Net':
-        net = CelebA_VAE_Net_Autoencoder()
+        ae_net = CelebA_VAE_Net_Autoencoder()
 
     return ae_net
