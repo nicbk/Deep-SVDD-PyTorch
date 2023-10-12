@@ -12,7 +12,7 @@ class Interpolate(nn.Module):
         self.mode = mode
         
     def forward(self, x):
-        x = self.interp(x, size=self.size, mode=self.mode, align_corners=False)
+        x = self.interp(x, size=self.size, mode=self.mode)
         return x
 
 # Network copied from:
@@ -40,8 +40,8 @@ class CelebA_VAE_Net(BaseNet):
             in_channels = h_dim
 
         self.encoder = nn.Sequential(*modules)
-        self.fc_mu = nn.Linear(hidden_dims[-1]*6*5, self.rep_dim)
-        self.fc_var = nn.Linear(hidden_dims[-1]*6*5, self.rep_dim)
+        self.fc_mu = nn.Linear(hidden_dims[-1]*7*6, self.rep_dim)
+        self.fc_var = nn.Linear(hidden_dims[-1]*7*6, self.rep_dim)
 
     def forward(self, x):
         x = self.encoder(x)
@@ -78,11 +78,11 @@ class CelebA_VAE_Net_Autoencoder(BaseNet):
             in_channels = h_dim
 
         self.encoder = nn.Sequential(*modules)
-        self.fc_mu = nn.Linear(hidden_dims[-1]*6*5, self.rep_dim)
-        self.fc_var = nn.Linear(hidden_dims[-1]*6*5, self.rep_dim)
+        self.fc_mu = nn.Linear(hidden_dims[-1]*7*6, self.rep_dim)
+        self.fc_var = nn.Linear(hidden_dims[-1]*7*6, self.rep_dim)
 
         modules = []
-        self.decoder_input = nn.Linear(self.rep_dim, hidden_dims[-1]*6*5)
+        self.decoder_input = nn.Linear(self.rep_dim, hidden_dims[-1]*7*6)
         hidden_dims.reverse()
 
         for i in range(len(hidden_dims) - 1):
@@ -129,7 +129,7 @@ class CelebA_VAE_Net_Autoencoder(BaseNet):
         x = eps * std + mu
 
         x = self.decoder_input(x)
-        x = x.view(-1, 512, 6, 5)
+        x = x.view(-1, 512, 7, 6)
         x = self.decoder(x)
         x = self.final_layer(x)
 
