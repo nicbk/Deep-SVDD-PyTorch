@@ -59,7 +59,7 @@ class AETrainer(BaseTrainer):
 
                 # Update network parameters via backpropagation: forward + backward + optimize
                 output_img, mu, log_var = ae_net(inputs)
-                kld_weight = scheduler.get_lr()[0]
+                kld_weight = self.batch_size/len(train_loader)
                 
                 recons_loss = F.mse_loss(output_img, inputs)
 
@@ -105,7 +105,7 @@ class AETrainer(BaseTrainer):
                 inputs = inputs.to(self.device)
                 output_img, mu, log_var = ae_net(inputs)
 
-                kld_weight = scheduler.get_lr()[0]
+                kld_weight = self.batch_size/len(test_loader)
                 
                 recons_loss = F.mse_loss(output_img, inputs)
 
