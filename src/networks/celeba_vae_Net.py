@@ -64,7 +64,7 @@ class CelebA_VAE_Net_Autoencoder(BaseNet):
         self.rep_dim = 50
 
         modules = []
-        hidden_dims = [40, 80, 140, 300, 768]
+        hidden_dims = [48, 80, 140, 300, 768]
 
         in_channels = 3
         for h_dim in hidden_dims:
