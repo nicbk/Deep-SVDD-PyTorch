@@ -27,7 +27,8 @@ class CelebA_Dataset(TorchvisionDataset):
         transform = transforms.Compose([transforms.ToTensor(),
                                         transforms.Lambda(lambda x: global_contrast_normalization(x, scale='l1')),
                                         transforms.Normalize([min_max[normal_class][0]] * 3,
-                                                             [min_max[normal_class][1] - min_max[normal_class][0]] * 3)])
+                                                             [min_max[normal_class][1] - min_max[normal_class][0]] * 3),
+                                        transforms.Resize(size=64)])
 
         #target_transform = transforms.Lambda(lambda x: int(x in self.outlier_classes))
         target_transform = transforms.Lambda(lambda x: int(x[normal_class] == 0))
