@@ -18,7 +18,8 @@ class CelebA_Dataset(TorchvisionDataset):
         self.n_classes = 2  # 0: normal, 1: outlier
         self.normal_classes = tuple([normal_class])
         self.outlier_classes = list(range(0, 40))
-        self.outlier_classes.remove(normal_class)
+        if normal_class != -1:
+            self.outlier_classes.remove(normal_class)
 
         # Only a few classes have been computed
         min_max = [(0, 0), (0, 0), (-9.556149, 10.84259), (0, 0), (-7.183228, 8.768654), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (-7.7556286, 14.142446), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
