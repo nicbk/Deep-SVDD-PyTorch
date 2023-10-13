@@ -30,8 +30,8 @@ class CelebA_VAE_Net(BaseNet):
             in_channels = h_dim
 
         self.encoder = nn.Sequential(*modules)
-        self.fc_mu = nn.Linear(hidden_dims[-1]*4*4, self.rep_dim)
-        self.fc_var = nn.Linear(hidden_dims[-1]*4*4, self.rep_dim)
+        self.fc_mu = nn.Linear(hidden_dims[-1]*5*5, self.rep_dim)
+        self.fc_var = nn.Linear(hidden_dims[-1]*5*5, self.rep_dim)
 
     def forward(self, x):
         x = self.encoder(x)
@@ -68,11 +68,11 @@ class CelebA_VAE_Net_Autoencoder(BaseNet):
             in_channels = h_dim
 
         self.encoder = nn.Sequential(*modules)
-        self.fc_mu = nn.Linear(hidden_dims[-1]*4*4, self.rep_dim)
-        self.fc_var = nn.Linear(hidden_dims[-1]*4*4, self.rep_dim)
+        self.fc_mu = nn.Linear(hidden_dims[-1]*5*5, self.rep_dim)
+        self.fc_var = nn.Linear(hidden_dims[-1]*5*5, self.rep_dim)
 
         modules = []
-        self.decoder_input = nn.Linear(self.rep_dim, hidden_dims[-1]*4*4)
+        self.decoder_input = nn.Linear(self.rep_dim, hidden_dims[-1]*5*5)
         hidden_dims.reverse()
 
         for i in range(len(hidden_dims) - 1):
@@ -118,7 +118,7 @@ class CelebA_VAE_Net_Autoencoder(BaseNet):
         x = eps * std + mu
 
         x = self.decoder_input(x)
-        x = x.view(-1, 768, 4, 4)
+        x = x.view(-1, 768, 5, 5)
         x = self.decoder(x)
         x = self.final_layer(x)
 
