@@ -12,7 +12,7 @@ class CelebA_VAE_Net(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 96
+        self.rep_dim = 64
 
         modules = []
         hidden_dims = [48, 80, 140, 300, 768]
@@ -50,7 +50,7 @@ class CelebA_VAE_Net_Autoencoder(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 96
+        self.rep_dim = 64
 
         modules = []
         hidden_dims = [48, 80, 140, 300, 768]

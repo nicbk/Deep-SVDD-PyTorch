@@ -12,7 +12,7 @@ import torchvision.transforms as transforms
 
 class CelebA_Dataset(TorchvisionDataset):
 
-    def __init__(self, root: str, normal_class=31):
+    def __init__(self, root: str, normal_class=-1):
         super().__init__(root)
 
         self.n_classes = 2  # 0: normal, 1: outlier
@@ -28,13 +28,13 @@ class CelebA_Dataset(TorchvisionDataset):
                                         transforms.CenterCrop(178),
                                         transforms.Resize(size=160)])
 
-        #target_transform = transforms.Lambda(lambda x: int(x in self.outlier_classes))
         target_transform = transforms.Lambda(lambda x: int(x[normal_class] == 0))
 
         train_set = MyCelebA(root=self.root, split='train', target_type='attr', download=False, transform=transform, target_transform=target_transform)
         # Subset train set to normal class
-        train_idx_normal = get_target_label_idx(train_set.attr[:,normal_class], [1])
-        self.train_set = Subset(train_set, train_idx_normal)
+        if normal_class != -1:
+            train_idx_normal = get_target_label_idx(train_set.attr[:,normal_class], [1])
+            self.train_set = Subset(train_set, train_idx_normal)
 
         self.test_set = MyCelebA(root=self.root, split='test', target_type='attr', download=False, transform=transform, target_transform=target_transform)
 
