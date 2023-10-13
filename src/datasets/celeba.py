@@ -29,7 +29,7 @@ class CelebA_Dataset(TorchvisionDataset):
                                         transforms.Normalize([min_max[normal_class][0]] * 3,
                                                              [min_max[normal_class][1] - min_max[normal_class][0]] * 3),
                                         transforms.Pad([20, 0, 20, 0]),
-                                        transforms.Resize(size=64)])
+                                        transforms.Resize(size=128)])
 
         #target_transform = transforms.Lambda(lambda x: int(x in self.outlier_classes))
         target_transform = transforms.Lambda(lambda x: int(x[normal_class] == 0))
