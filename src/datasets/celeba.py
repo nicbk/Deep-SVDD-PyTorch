@@ -31,11 +31,11 @@ class CelebA_Dataset(TorchvisionDataset):
 
         target_transform = transforms.Lambda(lambda x: int(x[normal_class] == 0))
 
-        train_set = MyCelebA(root=self.root, split='train', target_type='attr', download=False, transform=transform, target_transform=target_transform)
+        self.train_set = MyCelebA(root=self.root, split='train', target_type='attr', download=False, transform=transform, target_transform=target_transform)
         # Subset train set to normal class
         if normal_class != -1:
-            train_idx_normal = get_target_label_idx(train_set.attr[:,normal_class], [1])
-            self.train_set = Subset(train_set, train_idx_normal)
+            train_idx_normal = get_target_label_idx(self.train_set.attr[:,normal_class], [1])
+            self.train_set = Subset(self.train_set, train_idx_normal)
 
         self.test_set = MyCelebA(root=self.root, split='test', target_type='attr', download=False, transform=transform, target_transform=target_transform)
 
