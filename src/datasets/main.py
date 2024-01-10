@@ -1,7 +1,7 @@
 from .mnist import MNIST_Dataset
 from .cifar10 import CIFAR10_Dataset
 from .celeba import CelebA_Dataset
-from .compas import COMPAS
+from .compas import COMPAS_Dataset
 
 
 def load_dataset(dataset_name, data_path, normal_class):
