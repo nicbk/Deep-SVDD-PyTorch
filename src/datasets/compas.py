@@ -14,7 +14,6 @@ class COMPAS_Dataset(Dataset):
         # subset 1 => High decile score, did not reoffend
         # subset 2 => Low decile score, reoffended
         # subset 3 => Low decile score, did not reoffend
-        super().__init__(csv_filename)
 
         compas_full = COMPAS(csv_filename)
         indices = []
