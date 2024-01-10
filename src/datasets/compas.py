@@ -9,7 +9,7 @@ import os
 import warnings
 
 class COMPAS_Dataset(Dataset):
-    def __init__(self, csv_filename, subset=1):
+    def __init__(self, csv_filename: str, subset=1):
         # subset 0 => High decile score, reoffended
         # subset 1 => High decile score, did not reoffend
         # subset 2 => Low decile score, reoffended
