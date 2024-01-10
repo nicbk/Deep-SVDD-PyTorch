@@ -1,12 +1,13 @@
 from .mnist import MNIST_Dataset
 from .cifar10 import CIFAR10_Dataset
 from .celeba import CelebA_Dataset
+from .compas import COMPAS
 
 
 def load_dataset(dataset_name, data_path, normal_class):
     """Loads the dataset."""
 
-    implemented_datasets = ('mnist', 'cifar10', 'celeba')
+    implemented_datasets = ('mnist', 'cifar10', 'celeba', 'compas')
     assert dataset_name in implemented_datasets
 
     dataset = None
@@ -19,5 +20,8 @@ def load_dataset(dataset_name, data_path, normal_class):
 
     if dataset_name == 'celeba':
         dataset = CelebA_Dataset(root=data_path, normal_class=normal_class)
+
+    if dataset_name == 'compas':
+        dataset = COMPAS_Dataset(csv_filename=data_path, subset=normal_class)
 
     return dataset

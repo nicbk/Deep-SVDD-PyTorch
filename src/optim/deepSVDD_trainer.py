@@ -123,11 +123,11 @@ class DeepSVDDTrainer(BaseTrainer):
         # Testing
         logger.info('Starting testing...')
         start_time = time.time()
-        idx_label_score = []
+        idx_score = []
         net.eval()
         with torch.no_grad():
             for data in test_loader:
-                inputs, labels, idx = data
+                inputs, _, _ = data
                 inputs = inputs.to(self.device)
                 outputs = net(inputs)
                 dist = torch.sum((outputs - self.c) ** 2, dim=1)
@@ -136,16 +136,16 @@ class DeepSVDDTrainer(BaseTrainer):
                 else:
                     scores = dist
 
-                # Save triples of (idx, label, score) in a list
-                idx_label_score += list(zip(idx.cpu().data.numpy().tolist(),
-                                            labels.cpu().data.numpy().tolist(),
+                # Save (idx, score) in a list
+                idx_score += list(zip(idx.cpu().data.numpy().tolist(),
                                             scores.cpu().data.numpy().tolist()))
 
         self.test_time = time.time() - start_time
         logger.info('Testing time: %.3f' % self.test_time)
 
-        self.test_scores = idx_label_score
+        self.test_scores = idx_score
 
+        """
         # Compute AUC
         _, labels, scores = zip(*idx_label_score)
         labels = np.array(labels)
@@ -153,6 +153,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
         self.test_auc = roc_auc_score(labels, scores)
         logger.info('Test set AUC: {:.2f}%'.format(100. * self.test_auc))
+        """
 
         logger.info('Finished testing.')
 

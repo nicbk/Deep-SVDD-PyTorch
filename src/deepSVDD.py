@@ -52,10 +52,11 @@ class DeepSVDD(object):
             'test_scores': None,
         }
 
-    def set_network(self, net_name):
+    def set_network(self, net_name, num_tags):
         """Builds the neural network \phi."""
         self.net_name = net_name
-        self.net = build_network(net_name)
+        self.net = build_network(net_name, num_tags=self.num_tags)
+        self.num_tags = num_tags
 
     def train(self, dataset: BaseADDataset, optimizer_name: str = 'adam', lr: float = 0.001, n_epochs: int = 50,
               lr_milestones: tuple = (), batch_size: int = 128, weight_decay: float = 1e-6, device: str = 'cuda',
@@ -90,7 +91,7 @@ class DeepSVDD(object):
                  n_jobs_dataloader: int = 0):
         """Pretrains the weights for the Deep SVDD network \phi via autoencoder."""
 
-        self.ae_net = build_autoencoder(self.net_name)
+        self.ae_net = build_autoencoder(self.net_name, num_tags=self.num_tags)
         self.ae_optimizer_name = optimizer_name
         self.ae_trainer = AETrainer(optimizer_name, lr=lr, n_epochs=n_epochs, lr_milestones=lr_milestones,
                                     batch_size=batch_size, weight_decay=weight_decay, device=device,
@@ -133,7 +134,7 @@ class DeepSVDD(object):
         self.net.load_state_dict(model_dict['net_dict'])
         if load_ae:
             if self.ae_net is None:
-                self.ae_net = build_autoencoder(self.net_name)
+                self.ae_net = build_autoencoder(self.net_name, num_tags=self.num_tags)
             self.ae_net.load_state_dict(model_dict['ae_net_dict'])
 
     def save_results(self, export_json):
