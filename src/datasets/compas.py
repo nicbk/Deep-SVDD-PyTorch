@@ -60,8 +60,8 @@ class COMPAS(Dataset):
         for person in self.compas_json:
             for tag_cat in tag_cats:
                 tag = self.compas_json[person][tag_cat]
-                if tag not in tag_map:
-                    tag_map[tag] = self.num_tags
+                if tag not in self.tag_map:
+                    self.tag_map[tag] = self.num_tags
                     self.index_map.append(tag)
                     self.num_tags += 1
 
@@ -70,7 +70,7 @@ class COMPAS(Dataset):
             tags = [0 for i in range(self.num_tags)]
             for tag_cat in tag_cats:
                 tag = self.compas_json[person][tag_cat]
-                tags[tag_map[tag]] = 1
+                tags[self.tag_map[tag]] = 1
             self.instances[person] = tags
 
     def __len__(self):
