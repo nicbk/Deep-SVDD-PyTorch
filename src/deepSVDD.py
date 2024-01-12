@@ -25,7 +25,7 @@ class DeepSVDD(object):
         results: A dictionary to save the results.
     """
 
-    def __init__(self, objective: str = 'one-class', nu: float = 0.1):
+    def __init__(self, objective: str = 'one-class', nu: float = 0.1, num_tags):
         """Inits DeepSVDD with one of the two objectives and hyperparameter nu."""
 
         assert objective in ('one-class', 'soft-boundary'), "Objective must be either 'one-class' or 'soft-boundary'."
@@ -37,6 +37,7 @@ class DeepSVDD(object):
 
         self.net_name = None
         self.net = None  # neural network \phi
+        self.num_tags = num_tags
 
         self.trainer = None
         self.optimizer_name = None
@@ -52,11 +53,10 @@ class DeepSVDD(object):
             'test_scores': None,
         }
 
-    def set_network(self, net_name, num_tags):
+    def set_network(self, net_name):
         """Builds the neural network \phi."""
         self.net_name = net_name
         self.net = build_network(net_name, num_tags=self.num_tags)
-        self.num_tags = num_tags
 
     def train(self, dataset: BaseADDataset, optimizer_name: str = 'adam', lr: float = 0.001, n_epochs: int = 50,
               lr_milestones: tuple = (), batch_size: int = 128, weight_decay: float = 1e-6, device: str = 'cuda',
