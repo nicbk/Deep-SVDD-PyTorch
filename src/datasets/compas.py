@@ -65,6 +65,7 @@ class COMPAS(Dataset):
                     self.index_map.append(tag)
                     self.num_tags += 1
 
+        self.idx_map = []
         self.instances = {}
         for person in self.compas_json:
             tags = [0 for i in range(self.num_tags)]
@@ -72,9 +73,11 @@ class COMPAS(Dataset):
                 tag = self.compas_json[person][tag_cat]
                 tags[self.tag_map[tag]] = 1
             self.instances[person] = tags
+            self.idx_map.append(person)
 
     def __len__(self):
         return len(self.instances)
 
     def __getitem__(self, idx):
-        return self.instances[str(idx)], self.compas_json[str(idx)]['score_text'], self.compas_json[str(idx)]['two_year_recid']
+        true_idx = self.idx_map[idx]
+        return self.instances[true_idx], self.compas_json[true_idx]['score_text'], self.compas_json[true_idx]['two_year_recid']
