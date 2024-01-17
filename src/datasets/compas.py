@@ -1,6 +1,8 @@
 import csv
 import math
 import json
+import torch
+import numpy as np
 from torch.utils.data import Subset, Dataset, DataLoader
 from .preprocessing import get_target_label_idx, global_contrast_normalization
 from typing import Any, Callable, List, Optional, Tuple, Union
@@ -39,6 +41,8 @@ class COMPAS_Dataset(Dataset):
 
         self.train_set = Subset(compas_full, [indices[i] for i in range(math.floor(0.8 * len(indices)))])
         self.test_set = Subset(compas_full, [indices[i] for i in range(math.floor(0.8 * len(indices)), len(indices))])
+        self.train_set.instance_transform = True
+        self.test_set.instance_transform = True
 
     def loaders(self, batch_size=128, num_workers=0):
         return (DataLoader(self.train_set, batch_size, num_workers),
@@ -46,6 +50,7 @@ class COMPAS_Dataset(Dataset):
 
 class COMPAS(Dataset):
     def __init__(self, csv_filename):
+        self.instance_transform = False
         tag_cats = ['sex', 'age_cat', 'race', 'c_charge_degree', 'c_charge_desc']
         self.compas_json = {}
 
@@ -84,4 +89,7 @@ class COMPAS(Dataset):
 
     def __getitem__(self, idx):
         true_idx = self.idx_map[idx]
-        return self.instances[true_idx], self.compas_json[true_idx]['score_text'], self.compas_json[true_idx]['two_year_recid']
+        instance = self.instances[true_idx]
+        if self.instance_transform:
+            instance = torch.FloatTensor(np.array(instance))
+        return instance, self.compas_json[true_idx]['score_text'], self.compas_json[true_idx]['two_year_recid']
