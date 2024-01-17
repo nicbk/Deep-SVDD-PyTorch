@@ -89,6 +89,8 @@ class COMPAS(Dataset):
     def __getitem__(self, idx):
         true_idx = self.idx_map[idx]
         instance = self.instances[true_idx]
+        idx_ret = true_idx
         if self.instance_transform:
             instance = torch.FloatTensor(np.array(instance))
-        return instance, true_idx, self.compas_json[true_idx]['score_text'], self.compas_json[true_idx]['two_year_recid']
+            idx_ret = torch.tensor(idx_ret)
+        return instance, idx_ret, self.compas_json[true_idx]['score_text'], self.compas_json[true_idx]['two_year_recid']
