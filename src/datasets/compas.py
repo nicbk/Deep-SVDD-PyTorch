@@ -40,6 +40,7 @@ class COMPAS_Dataset(Dataset):
             indices.append(i)
 
         compas_full.instance_transform = True
+        self.index_map = compas_full.index_map
         self.train_set = Subset(compas_full, [indices[i] for i in range(math.floor(0.8 * len(indices)))])
         self.test_set = Subset(compas_full, [indices[i] for i in range(math.floor(0.8 * len(indices)), len(indices))])
 
