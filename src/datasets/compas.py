@@ -1,7 +1,7 @@
 import csv
 import math
 import json
-from torch.utils.data import Subset, Dataset
+from torch.utils.data import Subset, Dataset, DataLoader
 from .preprocessing import get_target_label_idx, global_contrast_normalization
 from typing import Any, Callable, List, Optional, Tuple, Union
 
@@ -39,6 +39,10 @@ class COMPAS_Dataset(Dataset):
 
         self.train_set = Subset(compas_full, [indices[i] for i in range(math.floor(0.8 * len(indices)))])
         self.test_set = Subset(compas_full, [indices[i] for i in range(math.floor(0.8 * len(indices)), len(indices))])
+
+    def loaders(self, batch_size=128, num_workers=0):
+        return (DataLoader(self.train_set, batch_size, num_workers),
+                DataLoader(self.test_set, batch_size, num_workers))
 
 class COMPAS(Dataset):
     def __init__(self, csv_filename):
