@@ -167,7 +167,7 @@ class DeepSVDDTrainer(BaseTrainer):
             counter = 0
             for data in train_loader:
                 counter += 1
-                print('Center Init ' + str(counter) + ' / ' + str(len(train_loader)))
+                #print('Center Init ' + str(counter) + ' / ' + str(len(train_loader)))
                 # get the inputs of the batch
                 inputs, _, _, _ = data
                 inputs = inputs.to(self.device)
