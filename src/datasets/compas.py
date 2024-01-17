@@ -92,5 +92,5 @@ class COMPAS(Dataset):
         idx_ret = true_idx
         if self.instance_transform:
             instance = torch.FloatTensor(np.array(instance))
-            idx_ret = torch.tensor(idx_ret)
+            idx_ret = torch.tensor(int(idx_ret))
         return instance, idx_ret, self.compas_json[true_idx]['score_text'], self.compas_json[true_idx]['two_year_recid']
