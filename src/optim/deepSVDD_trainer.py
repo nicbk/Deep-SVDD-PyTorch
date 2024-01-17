@@ -123,7 +123,7 @@ class DeepSVDDTrainer(BaseTrainer):
         # Testing
         logger.info('Starting testing...')
         start_time = time.time()
-        idx_score = []
+        #idx_score = []
         net.eval()
         with torch.no_grad():
             for data in test_loader:
@@ -137,13 +137,15 @@ class DeepSVDDTrainer(BaseTrainer):
                     scores = dist
 
                 # Save (idx, score) in a list
+                """
                 idx_score += list(zip(idx.cpu().data.numpy().tolist(),
                                             scores.cpu().data.numpy().tolist()))
+                """
 
         self.test_time = time.time() - start_time
         logger.info('Testing time: %.3f' % self.test_time)
 
-        self.test_scores = idx_score
+        #self.test_scores = idx_score
 
         """
         # Compute AUC
