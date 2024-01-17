@@ -75,7 +75,7 @@ class DeepSVDDTrainer(BaseTrainer):
             for data in train_loader:
                 counter += 1
                 print('Train ' + str(counter) + ' / ' + str(len(train_loader)))
-                inputs, _, _ = data
+                inputs, _, _, _ = data
                 inputs = inputs.to(self.device)
 
                 # Zero the network parameter gradients
@@ -127,7 +127,7 @@ class DeepSVDDTrainer(BaseTrainer):
         net.eval()
         with torch.no_grad():
             for data in test_loader:
-                inputs, _, _ = data
+                inputs, idx, _, _ = data
                 inputs = inputs.to(self.device)
                 outputs = net(inputs)
                 dist = torch.sum((outputs - self.c) ** 2, dim=1)
@@ -136,8 +136,9 @@ class DeepSVDDTrainer(BaseTrainer):
                 else:
                     scores = dist
 
-                # Save (score) in a list
-                idx_score += list(scores.cpu().data.numpy().tolist())
+                # Save (idx, score) in a list
+                idx_score += list(zip(idx.cpu().data.numpy().tolist(),
+                                      scores.cpu().data.numpy().tolist()))
 
         self.test_time = time.time() - start_time
         logger.info('Testing time: %.3f' % self.test_time)
@@ -168,7 +169,7 @@ class DeepSVDDTrainer(BaseTrainer):
                 counter += 1
                 print('Center Init ' + str(counter) + ' / ' + str(len(train_loader)))
                 # get the inputs of the batch
-                inputs, _, _ = data
+                inputs, _, _, _ = data
                 inputs = inputs.to(self.device)
                 outputs = net(inputs)
                 n_samples += outputs.shape[0]

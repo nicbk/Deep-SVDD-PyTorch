@@ -91,4 +91,4 @@ class COMPAS(Dataset):
         instance = self.instances[true_idx]
         if self.instance_transform:
             instance = torch.FloatTensor(np.array(instance))
-        return instance, self.compas_json[true_idx]['score_text'], self.compas_json[true_idx]['two_year_recid']
+        return instance, true_idx, self.compas_json[true_idx]['score_text'], self.compas_json[true_idx]['two_year_recid']

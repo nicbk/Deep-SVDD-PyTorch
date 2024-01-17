@@ -50,7 +50,7 @@ class AETrainer(BaseTrainer):
             for data in train_loader:
                 counter += 1
                 print('AE Train ' + str(counter) + ' / ' + str(len(train_loader)))
-                inputs, _, _ = data
+                inputs, _, _, _ = data
                 inputs = inputs.to(self.device)
 
                 # Zero the network parameter gradients
@@ -91,30 +91,27 @@ class AETrainer(BaseTrainer):
         loss_epoch = 0.0
         n_batches = 0
         start_time = time.time()
-        #idx_score = []
+        idx_score = []
         ae_net.eval()
         with torch.no_grad():
             for data in test_loader:
-                inputs, _, _ = data
+                inputs, idx, _, _ = data
                 inputs = inputs.to(self.device)
                 outputs = ae_net(inputs)
                 scores = torch.sum((outputs - inputs) ** 2, dim=tuple(range(1, outputs.dim())))
                 loss = torch.mean(scores)
 
                 # Save (idx, score) in a list
-                """
                 idx_score += list(zip(idx.cpu().data.numpy().tolist(),
                                       scores.cpu().data.numpy().tolist()))
-                """
 
                 loss_epoch += loss.item()
                 n_batches += 1
 
         logger.info('Test set Loss: {:.8f}'.format(loss_epoch / n_batches))
 
-        """_, scores = zip(*idx_score)
+        _, scores = zip(*idx_score)
         scores = np.array(scores)
-        """
 
         """
         auc = roc_auc_score(labels, scores)
