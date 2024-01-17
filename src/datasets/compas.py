@@ -39,10 +39,9 @@ class COMPAS_Dataset(Dataset):
             
             indices.append(i)
 
+        compas_full.instance_transform = True
         self.train_set = Subset(compas_full, [indices[i] for i in range(math.floor(0.8 * len(indices)))])
         self.test_set = Subset(compas_full, [indices[i] for i in range(math.floor(0.8 * len(indices)), len(indices))])
-        self.train_set.instance_transform = True
-        self.test_set.instance_transform = True
 
     def loaders(self, batch_size=128, num_workers=0):
         return (DataLoader(self.train_set, batch_size, num_workers),
