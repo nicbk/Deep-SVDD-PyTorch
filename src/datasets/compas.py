@@ -89,7 +89,7 @@ class COMPAS(Dataset):
     def __getitem__(self, idx):
         true_idx = self.idx_map[idx]
         instance = self.instances[true_idx]
-        idx_ret = true_idx
+        idx_ret = idx
         if self.instance_transform:
             instance = torch.FloatTensor(np.array(instance))
             idx_ret = torch.tensor(int(idx_ret))

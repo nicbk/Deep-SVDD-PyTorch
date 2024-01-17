@@ -74,7 +74,7 @@ class DeepSVDDTrainer(BaseTrainer):
             counter = 0
             for data in train_loader:
                 counter += 1
-                print('Train ' + str(counter) + ' / ' + str(len(train_loader)))
+                #print('Train ' + str(counter) + ' / ' + str(len(train_loader)))
                 inputs, _, _, _ = data
                 inputs = inputs.to(self.device)
 

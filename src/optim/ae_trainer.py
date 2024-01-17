@@ -49,7 +49,7 @@ class AETrainer(BaseTrainer):
             counter = 0
             for data in train_loader:
                 counter += 1
-                print('AE Train ' + str(counter) + ' / ' + str(len(train_loader)))
+                #print('AE Train ' + str(counter) + ' / ' + str(len(train_loader)))
                 inputs, _, _, _ = data
                 inputs = inputs.to(self.device)
 
