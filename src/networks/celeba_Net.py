@@ -72,10 +72,10 @@ class CelebA_Net_Autoencoder(BaseNet):
         for (i, h_dim) in enumerate(hidden_dims_dec):
             modules_dec.append(
                 nn.Sequential(
+                    nn.BatchNorm2d(h_dim),
                     nn.LeakyReLU(),
                     nn.ConvTranspose2d(in_channels_dec, out_channels=h_dim,
                               kernel_size=3, stride=2, padding=1),
-                    nn.BatchNorm2d(h_dim),
                 )
             )
             in_channels_dec = h_dim

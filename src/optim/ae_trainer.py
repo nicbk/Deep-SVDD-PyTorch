@@ -46,10 +46,7 @@ class AETrainer(BaseTrainer):
             loss_epoch = 0.0
             n_batches = 0
             epoch_start_time = time.time()
-            counter = 0
             for data in train_loader:
-                counter += 1
-                print('AE Train ' + str(counter) + ' / ' + str(len(train_loader)))
                 inputs, _, _ = data
                 inputs = inputs.to(self.device)
 
