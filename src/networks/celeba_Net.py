@@ -64,10 +64,11 @@ class CelebA_Net_Autoencoder(BaseNet):
 
         modules_dec = []
         hidden_dims_dec = [64, 32, 3]
-        self.fc_dec = nn.Linear(self.rep_dim, hidden_dims_dec[-1]*20*20)
-
         in_channels_dec = 128
         self.in_channels_dec = in_channels_dec
+
+        self.fc_dec = nn.Linear(self.rep_dim, in_channels_dec*20*20)
+
         for (i, h_dim) in enumerate(hidden_dims_dec):
             modules_dec.append(
                 nn.Sequential(
