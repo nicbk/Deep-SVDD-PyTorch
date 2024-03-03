@@ -51,7 +51,7 @@ class CelebA_Net_Autoencoder(BaseNet):
         for h_dim in hidden_dims_enc:
             modules_enc.append(
                 nn.Sequential(
-                    nn.Conv2d(in_channels, out_channels=h_dim,
+                    nn.Conv2d(in_channels_enc, out_channels=h_dim,
                               kernel_size=3, stride=2, padding=1),
                     nn.BatchNorm2d(h_dim),
                     nn.LeakyReLU()
@@ -72,7 +72,7 @@ class CelebA_Net_Autoencoder(BaseNet):
             modules_dec.append(
                 nn.Sequential(
                     nn.LeakyReLU(),
-                    nn.ConvTranspose2d(in_channels, out_channels=h_dim,
+                    nn.ConvTranspose2d(in_channels_dec, out_channels=h_dim,
                               kernel_size=3, stride=2, padding=1),
                     nn.BatchNorm2d(h_dim),
                 )
