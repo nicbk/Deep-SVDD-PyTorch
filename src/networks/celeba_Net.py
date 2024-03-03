@@ -88,7 +88,7 @@ class CelebA_Net_Autoencoder(BaseNet):
         x = self.fc_enc(x)
 
         x = self.fc_dec(x)
-        x = x.view(x.size(0), self.in_channels_dec*20*20, 20, 20)
+        x = x.view(x.size(0), self.in_channels_dec, 20, 20)
         x = self.decoder()
         x = torch.sigmoid(x)
         return x
