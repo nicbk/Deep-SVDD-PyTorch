@@ -30,8 +30,8 @@ class CelebA_Dataset(TorchvisionDataset):
                                         transforms.Lambda(lambda x: global_contrast_normalization(x, scale='l1')),
                                         transforms.Normalize([min_max[0]] * 3,
                                                              [min_max[1] - min_max[0]] * 3),
-                                        transforms.CenterCrop(178),
-                                        transforms.Resize(size=160)])
+#                                        transforms.CenterCrop(178),
+                                        transforms.Resize(size=(160, 160))])
 
         target_transform = transforms.Lambda(lambda x: int(x[normal_class] == 0))
 

@@ -12,35 +12,29 @@ class CelebA_Net(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 64
-        self.mult = 48
-        self.pool = nn.MaxPool2d(2, 2)
+        self.rep_dim = 128
+        modules = []
+        hidden_dims = [32, 64, 128]
 
-        self.conv1 = nn.Conv2d(3, self.mult, 5, bias=False, padding=2)
-        self.bn2d1 = nn.BatchNorm2d(self.mult, eps=1e-04, affine=False)
-        self.conv2 = nn.Conv2d(self.mult, self.mult*2, 5, bias=False, padding=2)
-        self.bn2d2 = nn.BatchNorm2d(self.mult*2, eps=1e-04, affine=False)
-        self.conv3 = nn.Conv2d(self.mult*2, self.mult*4, 5, bias=False, padding=2)
-        self.bn2d3 = nn.BatchNorm2d(self.mult*4, eps=1e-04, affine=False)
-        self.conv4 = nn.Conv2d(self.mult*4, self.mult*8, 5, bias=False, padding=2)
-        self.bn2d4 = nn.BatchNorm2d(self.mult*8, eps=1e-04, affine=False)
-        self.conv5 = nn.Conv2d(self.mult*8, self.mult*16, 5, bias=False, padding=2)
-        self.bn2d5 = nn.BatchNorm2d(self.mult*16, eps=1e-04, affine=False)
-        self.fc1 = nn.Linear(self.mult*16 * 6 * 5, self.rep_dim, bias=False)
+        in_channels = 3
+        for h_dim in hidden_dims:
+            modules.append(
+                nn.Sequential(
+                    nn.Conv2d(in_channels, out_channels=h_dim,
+                              kernel_size=3, stride=2, padding=1),
+                    nn.BatchNorm2d(h_dim),
+                    nn.LeakyReLU()
+                )
+            )
+            in_channels = h_dim
+
+        self.encoder = nn.Sequential(*modules)
+        self.fc = nn.Linear(hidden_dims[-1]*20*20, self.rep_dim)
 
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.pool(F.leaky_relu(self.bn2d1(x)))
-        x = self.conv2(x)
-        x = self.pool(F.leaky_relu(self.bn2d2(x)))
-        x = self.conv3(x)
-        x = self.pool(F.leaky_relu(self.bn2d3(x)))
-        x = self.conv4(x)
-        x = self.pool(F.leaky_relu(self.bn2d4(x)))
-        x = self.conv5(x)
-        x = self.pool(F.leaky_relu(self.bn2d5(x)))
+        x = self.encoder(x)
         x = x.view(x.size(0), -1)
-        x = self.fc1(x)
+        x = self.fc(x)
         return x
 
 
@@ -50,71 +44,50 @@ class CelebA_Net_Autoencoder(BaseNet):
         super().__init__()
 
         self.rep_dim = 64
-        self.mult = 48
-        self.pool = nn.MaxPool2d(2, 2)
+        modules_enc = []
+        hidden_dims_enc = [32, 64, 128]
 
-        # Encoder (must match the Deep SVDD network above)
-        self.conv1 = nn.Conv2d(3, self.mult, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.conv1.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d1 = nn.BatchNorm2d(self.mult, eps=1e-04, affine=False)
-        self.conv2 = nn.Conv2d(self.mult, self.mult*2, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.conv2.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d2 = nn.BatchNorm2d(self.mult*2, eps=1e-04, affine=False)
-        self.conv3 = nn.Conv2d(self.mult*2, self.mult*4, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.conv3.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d3 = nn.BatchNorm2d(self.mult*4, eps=1e-04, affine=False)
-        self.conv4 = nn.Conv2d(self.mult*4, self.mult*8, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.conv4.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d4 = nn.BatchNorm2d(self.mult*8, eps=1e-04, affine=False)
-        self.conv5 = nn.Conv2d(self.mult*8, self.mult*16, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.conv5.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d5 = nn.BatchNorm2d(self.mult*16, eps=1e-04, affine=False)
-        self.fc1 = nn.Linear(self.mult*16 * 6 * 5, self.rep_dim, bias=False)
+        in_channels_enc = 3
+        for h_dim in hidden_dims_enc:
+            modules_enc.append(
+                nn.Sequential(
+                    nn.Conv2d(in_channels, out_channels=h_dim,
+                              kernel_size=3, stride=2, padding=1),
+                    nn.BatchNorm2d(h_dim),
+                    nn.LeakyReLU()
+                )
+            )
+            in_channels_enc = h_dim
 
-        # Decoder
-        self.fc2 = nn.Linear(self.rep_dim, self.mult*16 * 6 * 5, bias=False)
-        self.bn2d6 = nn.BatchNorm2d(self.mult*16, eps=1e-04, affine=False)
-        self.deconv1 = nn.ConvTranspose2d(self.mult*16, self.mult*8, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.deconv1.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d7 = nn.BatchNorm2d(self.mult*8, eps=1e-04, affine=False)
-        self.deconv2 = nn.ConvTranspose2d(self.mult*8, self.mult*4, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.deconv2.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d8 = nn.BatchNorm2d(self.mult*4, eps=1e-04, affine=False)
-        self.deconv3 = nn.ConvTranspose2d(self.mult*4, self.mult*2, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.deconv3.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d9 = nn.BatchNorm2d(self.mult*2, eps=1e-04, affine=False)
-        self.deconv4 = nn.ConvTranspose2d(self.mult*2, self.mult, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.deconv4.weight, gain=nn.init.calculate_gain('leaky_relu'))
-        self.bn2d10 = nn.BatchNorm2d(self.mult, eps=1e-04, affine=False)
-        self.deconv5 = nn.ConvTranspose2d(self.mult, 3, 5, bias=False, padding=2)
-        nn.init.xavier_uniform_(self.deconv5.weight, gain=nn.init.calculate_gain('leaky_relu'))
+        self.encoder = nn.Sequential(*modules_enc)
+        self.fc_enc = nn.Linear(hidden_dims_enc[-1]*20*20, self.rep_dim)
+
+        modules_dec = []
+        hidden_dims_dec = [64, 32, 3]
+        self.fc_dec = nn.Linear(self.rep_dim, hidden_dims_dec[-1]*20*20)
+
+        in_channels_dec = 128
+        self.in_channels_dec = in_channels_dec
+        for (i, h_dim) in enumerate(hidden_dims_dec):
+            modules_dec.append(
+                nn.Sequential(
+                    nn.LeakyReLU(),
+                    nn.ConvTranspose2d(in_channels, out_channels=h_dim,
+                              kernel_size=3, stride=2, padding=1),
+                    nn.BatchNorm2d(h_dim),
+                )
+            )
+            in_channels_dec = h_dim
+
+        self.decoder = nn.Sequential(*modules_dec)
 
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.pool(F.leaky_relu(self.bn2d1(x)))
-        x = self.conv2(x)
-        x = self.pool(F.leaky_relu(self.bn2d2(x)))
-        x = self.conv3(x)
-        x = self.pool(F.leaky_relu(self.bn2d3(x)))
-        x = self.conv4(x)
-        x = self.pool(F.leaky_relu(self.bn2d4(x)))
-        x = self.conv5(x)
-        x = self.pool(F.leaky_relu(self.bn2d5(x)))
+        x = self.encoder(x)
         x = x.view(x.size(0), -1)
-        x = self.fc1(x)
+        x = self.fc_enc(x)
 
-        x = self.fc2(x)
-        x = F.leaky_relu(x)
-        x = x.view(x.size(0), self.mult*16, 6, 5)
-        x = F.interpolate(F.leaky_relu(self.bn2d6(x)), size=[13, 11])
-        x = self.deconv1(x)
-        x = F.interpolate(F.leaky_relu(self.bn2d7(x)), size=[27, 22])
-        x = self.deconv2(x)
-        x = F.interpolate(F.leaky_relu(self.bn2d8(x)), size=[54, 44])
-        x = self.deconv3(x)
-        x = F.interpolate(F.leaky_relu(self.bn2d9(x)), size=[109, 89])
-        x = self.deconv4(x)
-        x = F.interpolate(F.leaky_relu(self.bn2d10(x)), size=[218, 178])
-        x = self.deconv5(x)
+        x = self.fc_dec(x)
+        x = x.view(x.size(0), self.in_channels_dec*20*20, 20, 20)
+        x = self.decoder()
         x = torch.sigmoid(x)
         return x
