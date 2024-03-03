@@ -1,4 +1,4 @@
-from torch.utils.data import Subset
+from torch.utils.data import Subset, ConcatDataset
 from PIL import Image
 from torchvision.datasets import CelebA
 from base.torchvision_dataset import TorchvisionDataset
@@ -7,37 +7,46 @@ from typing import Any, Callable, List, Optional, Tuple, Union
 
 import os
 import warnings
+import math
 import torchvision.transforms as transforms
 
 
 class CelebA_Dataset(TorchvisionDataset):
 
-    def __init__(self, root: str, normal_class=-1):
+    def __init__(self, root: str, normal_class=31):
         super().__init__(root)
 
         self.n_classes = 2  # 0: normal, 1: outlier
         self.normal_classes = tuple([normal_class])
-        self.outlier_classes = list(range(0, 55))
+        self.outlier_classes = list(range(0, 54))
         if normal_class != -1:
             self.outlier_classes.remove(normal_class)
 
-        # Only a few classes have been computed
-        min_max = [(0, 0), (0, 0), (-9.556149, 10.84259), (0, 0), (-7.183228, 8.768654), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (-7.7556286, 14.142446), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
+        # Precomputed GCN over all images in CelebA
+        min_max = (-9.556149, 16.703974)
 
         # CelebA preprocessing: GCN (with L1 norm) and min-max feature scaling to [0,1]
         transform = transforms.Compose([transforms.ToTensor(),
+                                        transforms.Lambda(lambda x: global_contrast_normalization(x, scale='l1')),
+                                        transforms.Normalize([min_max[0]] * 3,
+                                                             [min_max[1] - min_max[0]] * 3),
                                         transforms.CenterCrop(178),
                                         transforms.Resize(size=160)])
 
         target_transform = transforms.Lambda(lambda x: int(x[normal_class] == 0))
 
-        self.train_set = MyCelebA(root=self.root, split='train', target_type='attr', download=False, transform=transform, target_transform=target_transform)
-        # Subset train set to normal class
-        if normal_class != -1:
-            train_idx_normal = get_target_label_idx(self.train_set.attr[:,normal_class], [1])
-            self.train_set = Subset(self.train_set, train_idx_normal)
-
-        self.test_set = MyCelebA(root=self.root, split='test', target_type='attr', download=False, transform=transform, target_transform=target_transform)
+        if normal_class == -1:
+            self.train_set = MyCelebA(root=self.root, split='train', target_type='attr', download=False, transform=transform, target_transform=target_transform)
+            valid_set = MyCelebA(root=self.root, split='valid', target_type='attr', download=False, transform=transform, target_transform=target_transform)
+            test_only_set = MyCelebA(root=self.root, split='test', target_type='attr', download=False, transform=transform, target_transform=target_transform)
+            self.test_set = ConcatDataset([test_only_set, valid_set])
+        else:
+            all_set = MyCelebA(root=self.root, split='all', target_type='attr', download=False, transform=transform, target_transform=target_transform) 
+            idx_normal = get_target_label_idx(all_set.attr[:,normal_class], [1])
+            idx_normal_train = idx_normal[:math.floor(0.8 * len(idx_normal))]
+            idx_normal_test = idx_normal[math.floor(0.8 * len(idx_normal)):]
+            self.train_set = Subset(all_set, idx_normal_train)
+            self.test_set = Subset(all_set, idx_normal_test)
 
 class MyCelebA(CelebA):
     """Torchvision CelebA class with patch of __getitem__ method to also return the index of a data sample."""

@@ -2,7 +2,6 @@ from base.base_trainer import BaseTrainer
 from base.base_dataset import BaseADDataset
 from base.base_net import BaseNet
 from sklearn.metrics import roc_auc_score
-from torch.nn import functional as F
 
 import logging
 import time
@@ -47,7 +46,10 @@ class AETrainer(BaseTrainer):
             loss_epoch = 0.0
             n_batches = 0
             epoch_start_time = time.time()
+            counter = 0
             for data in train_loader:
+                counter += 1
+                print('AE Train ' + str(counter) + ' / ' + str(len(train_loader)))
                 inputs, _, _ = data
                 inputs = inputs.to(self.device)
 
@@ -55,14 +57,9 @@ class AETrainer(BaseTrainer):
                 optimizer.zero_grad()
 
                 # Update network parameters via backpropagation: forward + backward + optimize
-                output_img, mu, log_var = ae_net(inputs)
-                kld_weight = 0.00025
-                
-                recons_loss = F.mse_loss(output_img, inputs)
-
-                kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)
-
-                loss = recons_loss + kld_weight * kld_loss
+                outputs = ae_net(inputs)
+                scores = torch.sum((outputs - inputs) ** 2, dim=tuple(range(1, outputs.dim())))
+                loss = torch.mean(scores)
                 loss.backward()
                 optimizer.step()
 
@@ -100,16 +97,9 @@ class AETrainer(BaseTrainer):
             for data in test_loader:
                 inputs, labels, idx = data
                 inputs = inputs.to(self.device)
-                output_img, mu, log_var = ae_net(inputs)
-
-                kld_weight = 0.00025
-                
-                recons_loss = F.mse_loss(output_img, inputs)
-
-                kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim=1), dim=0)
-
-                loss = recons_loss + kld_weight * kld_loss
-                scores = torch.sum((output_img - inputs) ** 2, dim=tuple(range(1, output_img.dim())))
+                outputs = ae_net(inputs)
+                scores = torch.sum((outputs - inputs) ** 2, dim=tuple(range(1, outputs.dim())))
+                loss = torch.mean(scores)
 
                 # Save triple of (idx, label, score) in a list
                 idx_label_score += list(zip(idx.cpu().data.numpy().tolist(),
@@ -120,13 +110,6 @@ class AETrainer(BaseTrainer):
                 n_batches += 1
 
         logger.info('Test set Loss: {:.8f}'.format(loss_epoch / n_batches))
-
-        _, labels, scores = zip(*idx_label_score)
-        labels = np.array(labels)
-        scores = np.array(scores)
-
-        auc = roc_auc_score(labels, scores)
-        logger.info('Test set AUC: {:.2f}%'.format(100. * auc))
 
         test_time = time.time() - start_time
         logger.info('Autoencoder testing time: %.3f' % test_time)
