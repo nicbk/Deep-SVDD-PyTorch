@@ -12,9 +12,9 @@ class CelebA_Net(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 128
+        self.rep_dim = 64
         modules = []
-        hidden_dims = [32, 64, 128]
+        hidden_dims = [32, 64, 128, 256, 512]
 
         in_channels = 3
         for h_dim in hidden_dims:
@@ -29,7 +29,7 @@ class CelebA_Net(BaseNet):
             in_channels = h_dim
 
         self.encoder = nn.Sequential(*modules)
-        self.fc = nn.Linear(hidden_dims[-1]*20*20, self.rep_dim)
+        self.fc = nn.Linear(hidden_dims[-1]*5*5, self.rep_dim)
 
     def forward(self, x):
         x = self.encoder(x)
@@ -43,9 +43,9 @@ class CelebA_Net_Autoencoder(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 128
+        self.rep_dim = 64
         modules_enc = []
-        hidden_dims_enc = [32, 64, 128]
+        hidden_dims_enc = [32, 64, 128, 256, 512]
 
         in_channels_enc = 3
         for h_dim in hidden_dims_enc:
@@ -60,14 +60,14 @@ class CelebA_Net_Autoencoder(BaseNet):
             in_channels_enc = h_dim
 
         self.encoder = nn.Sequential(*modules_enc)
-        self.fc_enc = nn.Linear(hidden_dims_enc[-1]*20*20, self.rep_dim)
+        self.fc_enc = nn.Linear(hidden_dims_enc[-1]*5*5, self.rep_dim)
 
         modules_dec = []
-        hidden_dims_dec = [64, 32, 3]
-        in_channels_dec = 128
+        hidden_dims_dec = [256, 128, 64, 32, 3]
+        in_channels_dec = 512
         self.in_channels_dec = in_channels_dec
 
-        self.fc_dec = nn.Linear(self.rep_dim, in_channels_dec*20*20)
+        self.fc_dec = nn.Linear(self.rep_dim, in_channels_dec*5*5)
 
         for (i, h_dim) in enumerate(hidden_dims_dec):
             modules_dec.append(
@@ -88,7 +88,7 @@ class CelebA_Net_Autoencoder(BaseNet):
         x = self.fc_enc(x)
 
         x = self.fc_dec(x)
-        x = x.view(x.size(0), self.in_channels_dec, 20, 20)
+        x = x.view(x.size(0), self.in_channels_dec, 5, 5)
         x = self.decoder(x)
         x = torch.sigmoid(x)
         return x
