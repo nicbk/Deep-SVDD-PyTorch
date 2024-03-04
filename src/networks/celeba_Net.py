@@ -43,7 +43,7 @@ class CelebA_Net_Autoencoder(BaseNet):
     def __init__(self):
         super().__init__()
 
-        self.rep_dim = 64
+        self.rep_dim = 128
         modules_enc = []
         hidden_dims_enc = [32, 64, 128]
 
