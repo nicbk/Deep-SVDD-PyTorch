@@ -76,7 +76,7 @@ class CelebA_Net_Autoencoder(BaseNet):
                     nn.LeakyReLU(),
                     nn.Upsample(scale_factor=2, mode='nearest'),
                     nn.Conv2d(in_channels_dec, out_channels=h_dim,
-                              kernel_size=3, stride=2, padding=1),
+                              kernel_size=3, stride=1, padding=1),
                 )
             )
             in_channels_dec = h_dim
