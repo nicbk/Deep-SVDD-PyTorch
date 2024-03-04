@@ -27,9 +27,10 @@ class CelebA_Dataset(TorchvisionDataset):
 
         # CelebA preprocessing: GCN (with L1 norm) and min-max feature scaling to [0,1]
         transform = transforms.Compose([transforms.ToTensor(),
-                                        transforms.Lambda(lambda x: global_contrast_normalization(x, scale='l1')),
-                                        transforms.Normalize([min_max[0]] * 3,
-                                                             [min_max[1] - min_max[0]] * 3),
+                                        # No contrast normalization enabled by default: contrast is too poor to learn CelebA features
+                                        #transforms.Lambda(lambda x: global_contrast_normalization(x, scale='l1')),
+                                        #transforms.Normalize([min_max[0]] * 3,
+                                        #                     [min_max[1] - min_max[0]] * 3),
 #                                        transforms.CenterCrop(178),
                                         transforms.Resize(size=(160, 160))])
 
