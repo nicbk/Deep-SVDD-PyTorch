@@ -51,7 +51,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
         # Get train data loader
         train_loader, _ = dataset.loaders(batch_size=self.batch_size, num_workers=self.n_jobs_dataloader)
-        ones = torch.tensor([1 for i in range self.batch_size]).to(self.device)
+        ones = torch.tensor([1 for i in range(self.batch_size)]).to(self.device)
 
         # Set optimizer (Adam optimizer for now)
         optimizer = optim.Adam(net.parameters(), lr=self.lr, weight_decay=self.weight_decay,
