@@ -51,6 +51,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
         # Get train data loader
         train_loader, _ = dataset.loaders(batch_size=self.batch_size, num_workers=self.n_jobs_dataloader)
+        ones = torch.tensor([1 for i in range self.batch_size]).to(self.device)
 
         # Set optimizer (Adam optimizer for now)
         optimizer = optim.Adam(net.parameters(), lr=self.lr, weight_decay=self.weight_decay,
@@ -101,10 +102,11 @@ class DeepSVDDTrainer(BaseTrainer):
                         loss = torch.mean(dist)
                 elif (self.g_x != None and self.f_old_x != None):
                     g_val = self.g_x(inputs)
-                    if g_val.item() > 0:
-                        loss = g_val * (dist - (self.f_old_R)**2) + self.alpha * torch.abs(dist_old - dist)
-                    else:
-                        loss = g_val * dist + self.alpha * torch.abs(dist_old - dist)
+                    decision = torch.heaviside(g_val, g_val)
+                    loss_positive = g_val * (dist - (self.f_old_R)**2) + self.alpha * torch.abs(dist_old - dist)
+                    loss_negative = g_val * dist + self.alpha * torch.abs(dist_old - dist)
+
+                    loss = decision * loss_positive + (ones - decision) * loss_negative
                     loss = torch.mean(loss)
 
                 loss.backward()
