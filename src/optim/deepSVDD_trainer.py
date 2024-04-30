@@ -87,7 +87,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
                 # Update network parameters via backpropagation: forward + backward + optimize
                 outputs = net(inputs)
-                outputs_old = f_old_x(inputs)
+                outputs_old = self.f_old_x(inputs)
 
                 # Addition for making f(x) fairer if g(x) is provided
                 loss = None
