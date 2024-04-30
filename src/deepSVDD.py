@@ -25,13 +25,17 @@ class DeepSVDD(object):
         results: A dictionary to save the results.
     """
 
-    def __init__(self, objective: str = 'one-class', nu: float = 0.1):
+    def __init__(self, objective: str = 'one-class', nu: float = 0.1, g_x = None, f_old_x = None, f_old_R=None, alpha=None):
         """Inits DeepSVDD with one of the two objectives and hyperparameter nu."""
 
         assert objective in ('one-class', 'soft-boundary'), "Objective must be either 'one-class' or 'soft-boundary'."
         self.objective = objective
         assert (0 < nu) & (nu <= 1), "For hyperparameter nu, it must hold: 0 < nu <= 1."
         self.nu = nu
+        self.g_x = g_x
+        self.f_old_x = f_old_x
+        self.f_old_R = f_old_R
+        self.alpha = alpha
         self.R = 0.0  # hypersphere radius R
         self.c = None  # hypersphere center c
 
@@ -65,7 +69,8 @@ class DeepSVDD(object):
         self.optimizer_name = optimizer_name
         self.trainer = DeepSVDDTrainer(self.objective, self.R, self.c, self.nu, optimizer_name, lr=lr,
                                        n_epochs=n_epochs, lr_milestones=lr_milestones, batch_size=batch_size,
-                                       weight_decay=weight_decay, device=device, n_jobs_dataloader=n_jobs_dataloader)
+                                       weight_decay=weight_decay, device=device, n_jobs_dataloader=n_jobs_dataloader,
+                                       g_x=self.g_x, f_old_x=self.f_old_x, f_old_R=self.f_old_R, alpha=self.alpha)
         # Get the model
         self.net = self.trainer.train(dataset, self.net)
         self.R = float(self.trainer.R.cpu().data.numpy())  # get float
@@ -77,7 +82,8 @@ class DeepSVDD(object):
 
         if self.trainer is None:
             self.trainer = DeepSVDDTrainer(self.objective, self.R, self.c, self.nu,
-                                           device=device, n_jobs_dataloader=n_jobs_dataloader)
+                                           device=device, n_jobs_dataloader=n_jobs_dataloader,
+                                           g_x=self.g_x, f_old_x=self.f_old_x, f_old_R=self.f_old_R, alpha=self.alpha)
 
         self.trainer.test(dataset, self.net)
         # Get results

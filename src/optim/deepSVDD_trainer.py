@@ -15,7 +15,8 @@ class DeepSVDDTrainer(BaseTrainer):
 
     def __init__(self, objective, R, c, nu: float, optimizer_name: str = 'adam', lr: float = 0.001, n_epochs: int = 150,
                  lr_milestones: tuple = (), batch_size: int = 128, weight_decay: float = 1e-6, device: str = 'cuda',
-                 n_jobs_dataloader: int = 0):
+                 n_jobs_dataloader: int = 0,
+                 g_x = None, f_old_x = None, f_old_R = None, alpha = None):
         super().__init__(optimizer_name, lr, n_epochs, lr_milestones, batch_size, weight_decay, device,
                          n_jobs_dataloader)
 
@@ -26,6 +27,11 @@ class DeepSVDDTrainer(BaseTrainer):
         self.R = torch.tensor(R, device=self.device)  # radius R initialized with 0 by default.
         self.c = torch.tensor(c, device=self.device) if c is not None else None
         self.nu = nu
+
+        self.g_x = g_x
+        self.f_old_x = f_old_x
+        self.f_old_R = f_old_R
+        self.alpha = alpha
 
         # Optimization parameters
         self.warm_up_n_epochs = 10  # number of training epochs for soft-boundary Deep SVDD before radius R gets updated
@@ -80,12 +86,23 @@ class DeepSVDDTrainer(BaseTrainer):
 
                 # Update network parameters via backpropagation: forward + backward + optimize
                 outputs = net(inputs)
+
+                # Addition for making f(x) fairer if g(x) is provided
+                loss = None
                 dist = torch.sum((outputs - self.c) ** 2, dim=1)
-                if self.objective == 'soft-boundary':
-                    scores = dist - self.R ** 2
-                    loss = self.R ** 2 + (1 / self.nu) * torch.mean(torch.max(torch.zeros_like(scores), scores))
-                else:
-                    loss = torch.mean(dist)
+                if (self.g_x == None and self.f_old_x == None):
+                    if self.objective == 'soft-boundary':
+                        scores = dist - self.R ** 2
+                        loss = self.R ** 2 + (1 / self.nu) * torch.mean(torch.max(torch.zeros_like(scores), scores))
+                    else:
+                        loss = torch.mean(dist)
+                elif (self.g_x != None and self.f_old_x != None):
+                    g_val = self.g_x(inputs)
+                    if g_val > 0:
+                        loss = g_val * (dist - (self.f_old_R)**2) + self.alpha * torch.abs(self.f_old_x(inputs) - outputs)
+                    else:
+                        loss = g_val * (self.c - outputs) + self.alpha * torch.abs(self.f_old_x(inputs) - outputs)
+
                 loss.backward()
                 optimizer.step()
 
