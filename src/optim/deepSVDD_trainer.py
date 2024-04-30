@@ -102,14 +102,11 @@ class DeepSVDDTrainer(BaseTrainer):
                         loss = torch.mean(dist)
                 elif (self.g_x != None and self.f_old_x != None):
                     g_val = self.g_x(inputs)
-                    loss_batch = []
-                    for i in range(self.batch_size):
-                        if g_val[i].item() > 0:
-                            loss_batch.append(g_val[i] * (dist[i] - (self.f_old_R)**2) + self.alpha * torch.abs(dist_old[i] - dist[i]))
-                        else:
-                            loss_batch.append(g_val[i] * dist[i] + self.alpha * torch.abs(dist_old[i] - dist[i]))
-                    loss = torch.tensor(loss_batch).to(self.device)
-                    loss = torch.mean(loss)
+                    mask_pos = g_val > 0
+                    mask_neg = g_val <= 0
+                    outputs[mask_pos] = g_val[mask_pos] * (dist[mask_pos] - (self.f_old_R)**2) + self.alpha * torch.abs(dist_old[mask_pos] - dist[mask_pos])
+                    outputs[mask_neg] = g_val[mask_neg] * dist[mask_neg] + self.alpha * torch.abs(dist_old[mask_neg] - dist[mask_neg])
+
                     """
                     decision = torch.heaviside(g_val, g_val)
                     loss_positive = g_val * (dist - (self.f_old_R)**2) + self.alpha * torch.abs(dist_old - dist)
