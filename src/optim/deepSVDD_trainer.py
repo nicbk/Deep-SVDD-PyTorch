@@ -105,7 +105,7 @@ class DeepSVDDTrainer(BaseTrainer):
                     loss_batch = []
                     for i in range(self.batch_size):
                         if g_val[i].item() > 0:
-                            loss_batch.append(g_val[i] * (dist[i] - (self.f_old_R[i])**2) + self.alpha * torch.abs(dist_old[i] - dist[i]))
+                            loss_batch.append(g_val[i] * (dist[i] - (self.f_old_R)**2) + self.alpha * torch.abs(dist_old[i] - dist[i]))
                         else:
                             loss_batch.append(g_val[i] * dist[i] + self.alpha * torch.abs(dist_old[i] - dist[i]))
                     loss = torch.tensor(loss_batch).to(self.device)
