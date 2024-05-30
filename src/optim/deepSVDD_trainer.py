@@ -59,6 +59,7 @@ class DeepSVDDTrainer(BaseTrainer):
 
         # Set learning rate scheduler
         scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=self.lr_milestones, gamma=0.1)
+        pdist = torch.nn.PairwiseDistance
 
         # Initialize hypersphere center c (if c not loaded)
         if self.c is None:
@@ -93,7 +94,7 @@ class DeepSVDDTrainer(BaseTrainer):
                 # Addition for making f(x) fairer if g(x) is provided
                 loss = None
                 dist = torch.sum((outputs - self.c) ** 2, dim=1)
-                dist_old = torch.sum((outputs_old - self.f_old_c) ** 2, dim=1)
+                #dist_old = torch.sum((outputs_old - self.f_old_c) ** 2, dim=1)
                 if (self.g_x == None and self.f_old_x == None):
                     if self.objective == 'soft-boundary':
                         scores = dist - self.R ** 2
@@ -102,8 +103,11 @@ class DeepSVDDTrainer(BaseTrainer):
                         loss = torch.mean(dist)
                 elif (self.g_x != None and self.f_old_x != None):
                     g_val = self.g_x(inputs)
-                    #loss = torch.where(g_val > 0, g_val * (dist - self.f_old_R)**2 + self.alpha * (dist_old - dist)**2, g_val * dist + self.alpha * (dist_old - dist)**2)
-                    loss = -g_val * dist + self.alpha * (dist_old - dist)**2
+                    unit_dist = (outputs - self.c) / pdist(outputs, self.c) 
+                    dist_remaining = self.f_old_R - pdist(outputs, self.c)
+                    contrastive_outlier = outputs + dist_remaining * unit_dist
+                    loss = torch.where(g_val > 0, g_val * (outputs - contrastive_outlier)**2, -g_val * (outputs - self.c)**2) + self.alpha * torch.sum((outputs - outputs_old)**2, dim=1)
+                    #loss = -g_val * dist + self.alpha * (dist_old - dist)**2
                     loss = torch.mean(loss)
 
                 loss.backward()
