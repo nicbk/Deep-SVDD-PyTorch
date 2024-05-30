@@ -103,7 +103,8 @@ class DeepSVDDTrainer(BaseTrainer):
                 elif (self.g_x != None and self.f_old_x != None):
                     g_val = self.g_x(inputs)
                     #loss = torch.where(g_val > 0, g_val * (dist - self.f_old_R)**2 + self.alpha * (dist_old - dist)**2, g_val * dist + self.alpha * (dist_old - dist)**2)
-                    loss = -g_val * dist + self.alpha * (dist_old - dist)**2
+                    #loss = -g_val * dist + self.alpha * (dist_old - dist)**2
+                    loss = torch.where(g_val > 0, g_val * torch.nn.Sigmoid(1 / dist), g_val * torch.nn.KLDivLoss(outputs, self.c))
                     loss = torch.mean(loss)
 
                 loss.backward()
