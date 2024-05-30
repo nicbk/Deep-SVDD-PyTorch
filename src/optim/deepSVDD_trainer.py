@@ -59,6 +59,8 @@ class DeepSVDDTrainer(BaseTrainer):
 
         # Set learning rate scheduler
         scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=self.lr_milestones, gamma=0.1)
+        sigmoid = torch.nn.Sigmoid()
+        kl_loss = torch.nn.KLDivLoss()
 
         # Initialize hypersphere center c (if c not loaded)
         if self.c is None:
@@ -104,7 +106,7 @@ class DeepSVDDTrainer(BaseTrainer):
                     g_val = self.g_x(inputs)
                     #loss = torch.where(g_val > 0, g_val * (dist - self.f_old_R)**2 + self.alpha * (dist_old - dist)**2, g_val * dist + self.alpha * (dist_old - dist)**2)
                     #loss = -g_val * dist + self.alpha * (dist_old - dist)**2
-                    loss = torch.where(g_val > 0, g_val * torch.nn.Sigmoid(1 / dist), g_val * torch.nn.KLDivLoss(outputs, self.c))
+                    loss = torch.where(g_val > 0, g_val * sigmoid(1 / dist), g_val * kl_loss(outputs, self.c))
                     loss = torch.mean(loss)
 
                 loss.backward()
