@@ -107,7 +107,8 @@ class DeepSVDDTrainer(BaseTrainer):
                     #dist_remaining = self.f_old_R - pdist(outputs, self.c)
                     #contrastive_outlier = outputs + dist_remaining * unit_dist
                     #loss = torch.where(g_val > 0, g_val * (outputs - contrastive_outlier)**2, -g_val * (outputs - self.c)**2) + self.alpha * torch.sum((outputs - outputs_old)**2, dim=1)
-                    loss = -g_val * dist + self.alpha * (dist - dist_old)**2
+                    #loss = -g_val * dist + self.alpha * (dist - dist_old)**2
+                    loss = -g_val * torch.log(dist) + (1 - (g_val)**2) * (dist - dist_old)**2
                     loss = torch.mean(loss)
 
                 loss.backward()
